@@ -238,7 +238,7 @@ const Products = () => {
                   ))}
                 </div>
               </div>
-              <button onClick={goContacts}
+              <button onClick={() => navigate('/lihie90')}
                 className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold transition-all"
                 style={{ background: '#FF9632', color: '#fff' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.85'; }}
