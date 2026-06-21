@@ -412,15 +412,14 @@ const Index = () => {
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #000 0%, rgba(0,0,0,0.5) 50%, transparent)' }} />
             <div className="relative h-full flex flex-col justify-end p-8 lg:p-10" style={{ minHeight: 440 }}>
-              <span className="text-[10px] uppercase tracking-[0.25em] mb-3" style={{ color: C.brand }}>Флагманский проект</span>
               <h3 className="font-display text-3xl font-bold mb-2" style={{ color: '#fff' }}>«Лихие 90-е»</h3>
               <p className="max-w-md mb-3" style={{ color: C.textSec }}>
                 Криминальная RPG с открытым миром о 90-х годах в России. Реализм, атмосфера и свобода выбора.
               </p>
-              <button className="inline-flex items-center gap-2 font-medium w-fit hover:gap-3 transition-all"
+              <Link to="/lihie90" className="inline-flex items-center gap-2 font-medium w-fit hover:gap-3 transition-all"
                 style={{ color: C.brand }}>
                 Подробнее о проекте <Icon name="ArrowRight" size={16} />
-              </button>
+              </Link>
             </div>
           </article>
 
