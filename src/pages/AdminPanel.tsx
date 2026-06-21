@@ -92,8 +92,13 @@ export default function AdminPanel() {
     try {
       const r = await api.adminPosts();
       setPosts(r.posts);
-    } catch {
-      logout();
+    } catch (e: unknown) {
+      // Выкидываем только при явной ошибке авторизации (401), не при сетевых ошибках
+      const msg = e instanceof Error ? e.message : '';
+      if (msg.includes('авторизаци') || msg.includes('401') || msg.includes('Unauthorized')) {
+        logout();
+      }
+      // иначе просто показываем пустой список — не выгоняем пользователя
     }
   }
 

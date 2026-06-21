@@ -59,10 +59,11 @@ def T(table: str) -> str:
 
 
 def require_auth(event):
-    """Извлекает и верифицирует JWT. Возвращает payload или выбрасывает ValueError."""
-    token = (event.get("headers") or {}).get("X-Authorization", "")
-    if token.startswith("Bearer "):
-        token = token[7:]
+    """Извлекает и верифицирует JWT. Заголовки приходят в нижнем регистре."""
+    headers = {k.lower(): v for k, v in (event.get("headers") or {}).items()}
+    token = headers.get("x-authorization", "")
+    if token.startswith("Bearer ") or token.startswith("bearer "):
+        token = token.split(" ", 1)[1]
     if not token:
         raise ValueError("Unauthorized")
     return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGO])
