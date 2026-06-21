@@ -106,9 +106,17 @@ export default function AdminPanel() {
     setForm(empty); setEditId(null); setView('edit');
   }
 
-  function editPost(p: Post) {
+  async function editPost(p: Post) {
+    // Сначала открываем форму с базовыми данными
     setForm({ ...p, tags: p.tags || [], keywords: p.keywords || [] });
     setEditId(p.id); setView('edit');
+    // Затем догружаем полную статью (с content, excerpt, keywords)
+    try {
+      const full = await api.adminPost(p.id);
+      setForm({ ...full, tags: full.tags || [], keywords: full.keywords || [] });
+    } catch {
+      // оставляем то что уже есть
+    }
   }
 
   async function save(publish?: boolean) {

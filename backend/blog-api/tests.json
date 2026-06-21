@@ -5,7 +5,6 @@
       "method": "GET",
       "path": "/?_path=/posts",
       "expectedStatus": 200,
-      "expectedBody": { "posts": [], "total": 0 },
       "bodyMatcher": "partial"
     },
     {

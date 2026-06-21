@@ -186,6 +186,27 @@ def handler(event: dict, context) -> dict:
             conn.close()
             return ok({"posts": posts})
 
+        # ── ADMIN: получить одну статью полностью ────────────────
+        if path.startswith("/admin/posts/") and method == "GET":
+            payload = require_auth(event)
+            post_id = int(path.split("/")[-1])
+            conn, cur = get_db()
+            cur.execute(
+                f"""SELECT id, slug, title, excerpt, content, cover_url,
+                          category, tags, keywords, is_published, published_at,
+                          created_at, updated_at
+                   FROM {T('posts')} WHERE id=%s""",
+                (post_id,)
+            )
+            row = cur.fetchone()
+            conn.close()
+            if not row:
+                return err("Статья не найдена", 404)
+            cols = ["id","slug","title","excerpt","content","cover_url",
+                    "category","tags","keywords","is_published","published_at",
+                    "created_at","updated_at"]
+            return ok(dict(zip(cols, row)))
+
         # ── ADMIN: создать статью ─────────────────────────────────
         if path == "/admin/posts" and method == "POST":
             payload = require_auth(event)

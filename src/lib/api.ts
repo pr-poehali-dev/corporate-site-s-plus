@@ -49,6 +49,7 @@ export const api = {
     req<{ token: string; display_name: string }>('POST', '/auth/login', { username, password }),
 
   adminPosts: () => req<{ posts: Post[] }>('GET', '/admin/posts'),
+  adminPost: (id: number) => req<Post>('GET', `/admin/posts/${id}`),
   createPost: (data: Partial<Post>) => req<{ id: number; slug: string }>('POST', '/admin/posts', data),
   updatePost: (id: number, data: Partial<Post>) => req<{ updated: number }>('PUT', `/admin/posts/${id}`, data),
   archivePost: (id: number) => req<{ archived: number }>('DELETE', `/admin/posts/${id}`),
