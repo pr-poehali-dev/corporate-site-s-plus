@@ -5,8 +5,10 @@ function authHeader() {
   return t ? { 'X-Authorization': `Bearer ${t}` } : {};
 }
 
-async function req<T>(method: string, path: string, body?: unknown): Promise<T> {
-  const res = await fetch(BASE + path, {
+// Все запросы идут на корневой URL, маршрут передаётся как ?_path=...
+async function req<T>(method: string, route: string, body?: unknown, qp: Record<string, string> = {}): Promise<T> {
+  const params = new URLSearchParams({ _path: route, ...qp });
+  const res = await fetch(`${BASE}/?${params}`, {
     method,
     headers: { 'Content-Type': 'application/json', ...authHeader() },
     body: body ? JSON.stringify(body) : undefined,
@@ -36,18 +38,16 @@ export interface Post {
 export interface PostsResponse { posts: Post[]; total: number; page: number; per: number; }
 
 export const api = {
-  // public
   getPosts: (params: Record<string, string | number> = {}) => {
-    const q = new URLSearchParams(params as Record<string, string>).toString();
-    return req<PostsResponse>('GET', `/posts${q ? '?' + q : ''}`);
+    const qp: Record<string, string> = {};
+    Object.entries(params).forEach(([k, v]) => { qp[k] = String(v); });
+    return req<PostsResponse>('GET', '/posts', undefined, qp);
   },
   getPost: (slug: string) => req<Post>('GET', `/posts/${slug}`),
 
-  // auth
   login: (username: string, password: string) =>
     req<{ token: string; display_name: string }>('POST', '/auth/login', { username, password }),
 
-  // admin
   adminPosts: () => req<{ posts: Post[] }>('GET', '/admin/posts'),
   createPost: (data: Partial<Post>) => req<{ id: number; slug: string }>('POST', '/admin/posts', data),
   updatePost: (id: number, data: Partial<Post>) => req<{ updated: number }>('PUT', `/admin/posts/${id}`, data),

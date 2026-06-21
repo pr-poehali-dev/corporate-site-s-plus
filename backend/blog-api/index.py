@@ -50,8 +50,12 @@ def err(msg, status=400):
 def get_db():
     conn = psycopg2.connect(os.environ["DATABASE_URL"])
     cur = conn.cursor()
-    cur.execute(f"SET search_path TO {SCHEMA}")
     return conn, cur
+
+
+def T(table: str) -> str:
+    """Возвращает полное имя таблицы со схемой."""
+    return f"{SCHEMA}.{table}"
 
 
 def require_auth(event):
@@ -85,8 +89,10 @@ def handler(event: dict, context) -> dict:
         return {"statusCode": 200, "headers": CORS, "body": ""}
 
     method = event.get("httpMethod", "GET")
-    path = event.get("path", "/").rstrip("/") or "/"
     params = event.get("queryStringParameters") or {}
+    # Платформа не передаёт подпути — маршрут берём из ?_path=
+    path = params.get("_path", event.get("path", "/"))
+    path = path.rstrip("/") or "/"
 
     try:
         # ── AUTH ──────────────────────────────────────────────────
@@ -96,7 +102,7 @@ def handler(event: dict, context) -> dict:
             password = body.get("password", "")
 
             conn, cur = get_db()
-            cur.execute("SELECT id, password_hash, display_name FROM admins WHERE username=%s", (username,))
+            cur.execute(f"SELECT id, password_hash, display_name FROM {T('admins')} WHERE username=%s", (username,))
             row = cur.fetchone()
             conn.close()
 
@@ -128,12 +134,12 @@ def handler(event: dict, context) -> dict:
                 conds.append("%s=ANY(tags)"); vals.append(tag)
 
             where = " AND ".join(conds)
-            cur.execute(f"SELECT COUNT(*) FROM posts WHERE {where}", vals)
+            cur.execute(f"SELECT COUNT(*) FROM {T('posts')} WHERE {where}", vals)
             total = cur.fetchone()[0]
 
             cur.execute(
                 f"""SELECT id, slug, title, excerpt, cover_url, category, tags, published_at
-                    FROM posts WHERE {where}
+                    FROM {T('posts')} WHERE {where}
                     ORDER BY published_at DESC LIMIT %s OFFSET %s""",
                 vals + [per, offset]
             )
@@ -147,10 +153,10 @@ def handler(event: dict, context) -> dict:
             slug = path[len("/posts/"):]
             conn, cur = get_db()
             cur.execute(
-                """SELECT p.id, p.slug, p.title, p.excerpt, p.content, p.cover_url,
+                f"""SELECT p.id, p.slug, p.title, p.excerpt, p.content, p.cover_url,
                           p.category, p.tags, p.keywords, p.published_at,
                           a.display_name AS author
-                   FROM posts p LEFT JOIN admins a ON a.id=p.author_id
+                   FROM {T('posts')} p LEFT JOIN {T('admins')} a ON a.id=p.author_id
                    WHERE p.slug=%s AND p.is_published=TRUE""",
                 (slug,)
             )
@@ -166,8 +172,8 @@ def handler(event: dict, context) -> dict:
             payload = require_auth(event)
             conn, cur = get_db()
             cur.execute(
-                """SELECT id, slug, title, category, tags, is_published, created_at, updated_at
-                   FROM posts ORDER BY created_at DESC"""
+                f"""SELECT id, slug, title, category, tags, is_published, created_at, updated_at
+                   FROM {T('posts')} ORDER BY created_at DESC"""
             )
             cols = ["id","slug","title","category","tags","is_published","created_at","updated_at"]
             posts = [dict(zip(cols, r)) for r in cur.fetchall()]
@@ -195,10 +201,10 @@ def handler(event: dict, context) -> dict:
 
             conn, cur = get_db()
             cur.execute(
-                f"""INSERT INTO posts
+                f"""INSERT INTO {T('posts')}
                     (slug, title, excerpt, content, cover_url, author_id,
                      category, tags, keywords, is_published, published_at)
-                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,{pub_at if publish else 'NULL'})
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,{'NOW()' if publish else 'NULL'})
                     RETURNING id, slug""",
                 (slug, title, excerpt, content, cover_url, payload["sub"],
                  category, tags, keywords, publish)
@@ -215,7 +221,7 @@ def handler(event: dict, context) -> dict:
             b = parse_body(event)
 
             conn, cur = get_db()
-            cur.execute("SELECT is_published FROM posts WHERE id=%s", (post_id,))
+            cur.execute(f"SELECT is_published FROM {T('posts')} WHERE id=%s", (post_id,))
             existing = cur.fetchone()
             if not existing:
                 conn.close()
@@ -239,7 +245,7 @@ def handler(event: dict, context) -> dict:
             fields.append("updated_at=NOW()")
             vals.append(post_id)
 
-            cur.execute(f"UPDATE posts SET {', '.join(fields)} WHERE id=%s", vals)
+            cur.execute(f"UPDATE {T('posts')} SET {', '.join(fields)} WHERE id=%s", vals)
             conn.commit()
             conn.close()
             return ok({"updated": post_id})
@@ -249,7 +255,7 @@ def handler(event: dict, context) -> dict:
             payload = require_auth(event)
             post_id = int(path.split("/")[-1])
             conn, cur = get_db()
-            cur.execute("UPDATE posts SET is_published=FALSE, updated_at=NOW() WHERE id=%s", (post_id,))
+            cur.execute(f"UPDATE {T('posts')} SET is_published=FALSE, updated_at=NOW() WHERE id=%s", (post_id,))
             conn.commit()
             conn.close()
             return ok({"archived": post_id})
@@ -285,6 +291,7 @@ def handler(event: dict, context) -> dict:
         if "Unauthorized" in str(e):
             return err("Требуется авторизация", 401)
         return err(str(e))
-    except Exception:
-        traceback.print_exc()
-        return err("Внутренняя ошибка сервера", 500)
+    except Exception as e:
+        tb = traceback.format_exc()
+        print(tb)
+        return err(f"Ошибка: {str(e)} | {tb[-300:]}", 500)

@@ -1,10 +1,19 @@
 {
   "tests": [
     {
-      "name": "Health check",
+      "name": "GET posts via _path",
       "method": "GET",
-      "path": "/",
-      "expectedStatus": 404,
+      "path": "/?_path=/posts",
+      "expectedStatus": 200,
+      "expectedBody": { "posts": [], "total": 0 },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "POST login — неверный пароль",
+      "method": "POST",
+      "path": "/?_path=/auth/login",
+      "body": { "username": "admin", "password": "wrong" },
+      "expectedStatus": 401,
       "bodyMatcher": "partial"
     }
   ]
