@@ -66,7 +66,12 @@ def require_auth(event):
         token = token.split(" ", 1)[1]
     if not token:
         raise ValueError("Unauthorized")
-    return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGO])
+    # options={"verify_sub": False} — не проверяем тип sub (число или строка)
+    payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGO],
+                         options={"verify_sub": False})
+    # Нормализуем sub к строке
+    payload["sub"] = str(payload.get("sub", ""))
+    return payload
 
 
 def slugify(text: str) -> str:
@@ -114,7 +119,7 @@ def handler(event: dict, context) -> dict:
                 return err("Неверный логин или пароль", 401)
 
             token = jwt.encode(
-                {"sub": admin_id, "username": username, "exp": int(time.time()) + JWT_TTL},
+                {"sub": str(admin_id), "username": username, "exp": int(time.time()) + JWT_TTL},
                 JWT_SECRET, algorithm=JWT_ALGO
             )
             return ok({"token": token, "display_name": display_name})
@@ -207,7 +212,7 @@ def handler(event: dict, context) -> dict:
                      category, tags, keywords, is_published, published_at)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,{'NOW()' if publish else 'NULL'})
                     RETURNING id, slug""",
-                (slug, title, excerpt, content, cover_url, payload["sub"],
+                (slug, title, excerpt, content, cover_url, int(payload["sub"]),
                  category, tags, keywords, publish)
             )
             row = cur.fetchone()
@@ -264,11 +269,16 @@ def handler(event: dict, context) -> dict:
         # ── ADMIN: загрузка изображения ───────────────────────────
         if path == "/admin/upload" and method == "POST":
             payload = require_auth(event)
-            import base64
+            import base64 as b64lib
             b = parse_body(event)
             data_b64 = b.get("data", "")
             mime     = b.get("mime", "image/jpeg")
-            ext      = mime.split("/")[-1].replace("jpeg", "jpg")
+
+            # Убираем data URI префикс если есть: "data:image/jpeg;base64,..."
+            if "," in data_b64:
+                data_b64 = data_b64.split(",", 1)[1]
+
+            ext = mime.split("/")[-1].replace("jpeg", "jpg").replace("svg+xml", "svg")
             filename = f"blog/{int(time.time())}.{ext}"
 
             s3 = boto3.client(
@@ -280,7 +290,7 @@ def handler(event: dict, context) -> dict:
             s3.put_object(
                 Bucket="files",
                 Key=filename,
-                Body=base64.b64decode(data_b64),
+                Body=b64lib.b64decode(data_b64),
                 ContentType=mime,
             )
             cdn = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/{filename}"
