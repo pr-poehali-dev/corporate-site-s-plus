@@ -165,10 +165,10 @@ const About = () => {
       {/* ─── HERO ─── */}
       <section className="relative min-h-[55vh] flex items-end pb-20 pt-40 overflow-hidden">
         <div className="absolute inset-0">
-          <img src={OFFICE_IMG} alt="" className="w-full h-full object-cover" style={{ opacity: 0.45 }} />
-          <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${C.bg0} 40%, rgba(7,10,15,0.5) 80%, transparent)` }} />
-          <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${C.bg0} 0%, transparent 60%)` }} />
-          <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, rgba(7,10,15,0.8) 0%, transparent 40%)` }} />
+          <img src={OFFICE_IMG} alt="" className="w-full h-full object-cover" style={{ opacity: 0.95 }} />
+          <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${C.bg0} 25%, rgba(7,10,15,0.15) 60%, transparent)` }} />
+          <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${C.bg0} 0%, transparent 35%)` }} />
+          <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, rgba(7,10,15,0.4) 0%, transparent 25%)` }} />
         </div>
 
         <div className="relative z-10 w-full" style={{ padding: '0 clamp(1.25rem,4vw,6rem)', ...WRAP }}>
@@ -213,10 +213,12 @@ const About = () => {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="rounded-full" style={{ width: 220, height: 220, border: `1px solid ${C.border}`, opacity: 0.25 }} />
               </div>
-              {/* Центр */}
-              <div className="relative z-10 flex items-center justify-center rounded-full font-display font-bold text-3xl"
-                style={{ width: 100, height: 100, background: `linear-gradient(135deg, ${C.brand}, ${C.tech})`, color: '#fff', boxShadow: `0 0 40px rgba(47,128,255,0.5)` }}>
-                С+
+              {/* Центр — логотип */}
+              <div className="relative z-10 flex items-center justify-center"
+                style={{ width: 120, height: 120, filter: 'drop-shadow(0 0 24px rgba(47,128,255,0.45))' }}>
+                <img src="https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/28fa1250-d0b0-4356-a476-0ab0085147c3.png"
+                  alt="С+" className="w-full h-full object-contain"
+                  style={{ filter: 'brightness(0) invert(1)', opacity: 0.92 }} />
               </div>
               {/* Лепестки */}
               {[
