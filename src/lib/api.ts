@@ -2,7 +2,7 @@ const BASE = 'https://functions.poehali.dev/dd31f286-4b2a-49dc-a63f-7bbd58a99a3f
 
 function authHeader() {
   const t = localStorage.getItem('cms_token');
-  return t ? { Authorization: `Bearer ${t}` } : {};
+  return t ? { 'X-Authorization': `Bearer ${t}` } : {};
 }
 
 async function req<T>(method: string, path: string, body?: unknown): Promise<T> {

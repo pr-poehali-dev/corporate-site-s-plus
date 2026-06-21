@@ -191,10 +191,7 @@ const Index = () => {
           padding: scrolled ? '10px clamp(1.25rem,4vw,6rem)' : '18px clamp(1.25rem,4vw,6rem)' }}>
         <button onClick={() => scrollTo('hero')} className="flex items-center gap-3">
           <img src={LOGO} alt="АО СОФТ ПЛЮС СИСТЕМС" className="h-11 w-auto object-contain" />
-          <div className="hidden sm:block leading-none">
-            <div className="font-display font-semibold text-sm tracking-wide" style={{ color: C.text }}>АО «СОФТ ПЛЮС СИСТЕМС»</div>
-            <div className="text-[10px] uppercase tracking-[0.2em]" style={{ color: C.textMut }}>Digital Engineering</div>
-          </div>
+          <span className="font-display font-semibold hidden sm:block" style={{ color: C.text, fontSize: 'clamp(0.8rem,1.2vw,1rem)', lineHeight: 1 }}>АО «СОФТ ПЛЮС СИСТЕМС»</span>
         </button>
 
         <nav className="hidden lg:flex items-center gap-1">
@@ -266,26 +263,29 @@ const Index = () => {
           <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, rgba(7,10,15,0.7) 0%, transparent 30%)` }} />
         </div>
 
-        {/* плавающие теги — только десктоп */}
-        <div className="absolute inset-0 hidden xl:block pointer-events-none" style={{ padding: '0 clamp(1.25rem,4vw,6rem)' }}>
-          {HERO_TAGS.map((t, i) => (
-            <div key={t.title}
-              className="absolute animate-fade-up animate-float text-sm font-medium"
-              style={{
-                top: t.top,
-                [t.side]: 0,
-                animationDelay: `${0.6 + i * 0.13}s`,
-                background: 'rgba(11,18,32,0.85)',
-                backdropFilter: 'blur(16px)',
-                border: `1px solid ${C.border}`,
-                padding: '10px 16px',
-              } as React.CSSProperties}>
-              <span className="flex items-center gap-2" style={{ color: C.text }}>
-                <span className="w-1.5 h-1.5 rounded-full animate-pulse-glow" style={{ background: C.brand }} />
-                {t.title}
-              </span>
-            </div>
-          ))}
+        {/* плавающие теги — только десктоп, строго внутри WRAP */}
+        <div className="absolute inset-0 hidden xl:flex pointer-events-none" style={{ justifyContent: 'center' }}>
+          <div className="relative w-full" style={{ maxWidth: 1680, padding: '0 clamp(1.25rem,4vw,6rem)' }}>
+            {HERO_TAGS.map((t, i) => (
+              <div key={t.title}
+                className="absolute animate-fade-up animate-float text-sm font-medium"
+                style={{
+                  top: t.top,
+                  [t.side]: 'clamp(1.25rem,4vw,6rem)',
+                  animationDelay: `${0.6 + i * 0.13}s`,
+                  background: 'rgba(11,18,32,0.88)',
+                  backdropFilter: 'blur(16px)',
+                  border: `1px solid ${C.border}`,
+                  padding: '10px 16px',
+                  whiteSpace: 'nowrap',
+                } as React.CSSProperties}>
+                <span className="flex items-center gap-2" style={{ color: C.text }}>
+                  <span className="w-1.5 h-1.5 rounded-full animate-pulse-glow" style={{ background: C.brand }} />
+                  {t.title}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="section-pad relative z-10 w-full">
