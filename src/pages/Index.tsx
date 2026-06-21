@@ -14,7 +14,7 @@ const GAME_IMG = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4
 const NAV = [
   { label: 'Направления', id: 'services',  href: '' },
   { label: 'Технологии',  id: 'tech',      href: '' },
-  { label: 'О компании',  id: 'about',     href: '' },
+  { label: 'О компании',  id: '',          href: '/about' },
   { label: 'Блог',        id: '',          href: '/blog' },
   { label: 'Карьера',     id: 'career',    href: '' },
   { label: 'Контакты',    id: 'contacts',  href: '' },
@@ -675,8 +675,9 @@ const Index = () => {
           <FooterCol title="Направления" items={SERVICES.map((s) => s.title)} />
           <FooterCol title="Компания" items={['О компании','Блог','Карьера','Контакты']}
             onClick={(t) => {
-              const m: Record<string,string> = {'О компании':'about','Карьера':'career','Контакты':'contacts'};
+              if (t === 'О компании') { window.location.href = '/about'; return; }
               if (t === 'Блог') { window.location.href = '/blog'; return; }
+              const m: Record<string,string> = {'Карьера':'career','Контакты':'contacts'};
               if (m[t]) scrollTo(m[t]);
             }} />
           <div>
