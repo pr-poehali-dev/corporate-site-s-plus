@@ -23,8 +23,16 @@ export default {
 				sans: ['Golos Text', 'sans-serif'],
 			},
 			colors: {
-				graphite: 'hsl(var(--graphite))',
-				navy: 'hsl(var(--deep-navy))',
+				/* C+ brand palette */
+				brand:  { DEFAULT: '#2F80FF', hover: '#4DA3FF', deep: '#1C5CFF' },
+				tech:   { light: '#00C2FF',   mid: '#00A3C7',   deep: '#007A99' },
+				signal: { DEFAULT: '#00D38A', mid: '#00A86B',   bg: '#0B3D2E' },
+				'bg-0': '#070A0F',
+				'bg-1': '#0B1220',
+				'bg-2': '#101A2B',
+				'txt-primary':   '#E6EDF7',
+				'txt-secondary': '#B6C2D1',
+				'txt-muted':     '#7A8AA0',
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

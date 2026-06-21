@@ -4,38 +4,57 @@
 
 @layer base {
   :root {
-    --background: 222 47% 5%;
-    --foreground: 210 40% 96%;
+    /* ── Фундамент ── */
+    --bg-0: #070a0f;
+    --bg-1: #0b1220;
+    --bg-2: #101a2b;
 
-    --card: 220 40% 8%;
-    --card-foreground: 210 40% 96%;
+    /* ── Брендовый Electric Cyan Blue ── */
+    --brand: #2f80ff;
+    --brand-hover: #4da3ff;
+    --brand-deep: #1c5cff;
 
-    --popover: 220 44% 7%;
-    --popover-foreground: 210 40% 96%;
+    /* ── Cyan–Teal Tech (AI / data) ── */
+    --tech-light: #00c2ff;
+    --tech-mid: #00a3c7;
+    --tech-deep: #007a99;
 
-    --primary: 205 100% 56%;
-    --primary-foreground: 222 47% 5%;
+    /* ── Emerald Signal (только метрики / успех) ── */
+    --signal: #00d38a;
+    --signal-mid: #00a86b;
+    --signal-bg: #0b3d2e;
 
-    --secondary: 217 40% 14%;
-    --secondary-foreground: 210 40% 96%;
+    /* ── Типографика ── */
+    --text-primary: #e6edf7;
+    --text-secondary: #b6c2d1;
+    --text-muted: #7a8aa0;
 
-    --muted: 217 33% 13%;
-    --muted-foreground: 215 25% 60%;
+    /* ── Линии / сетка ── */
+    --border-brand: rgba(77, 163, 255, 0.15);
+    --border-tech: rgba(0, 194, 255, 0.08);
+    --border-soft: rgba(255, 255, 255, 0.05);
 
-    --accent: 199 89% 60%;
-    --accent-foreground: 222 47% 5%;
-
+    /* ── shadcn токены → новая палитра ── */
+    --background: 222 47% 3%;
+    --foreground: 210 44% 93%;
+    --card: 222 48% 9%;
+    --card-foreground: 210 44% 93%;
+    --popover: 222 48% 9%;
+    --popover-foreground: 210 44% 93%;
+    --primary: 216 100% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 48% 13%;
+    --secondary-foreground: 210 44% 93%;
+    --muted: 214 48% 13%;
+    --muted-foreground: 210 18% 55%;
+    --accent: 196 100% 50%;
+    --accent-foreground: 0 0% 5%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 210 40% 98%;
-
-    --border: 217 33% 16%;
-    --input: 217 33% 16%;
-    --ring: 205 100% 56%;
-
-    --radius: 0.25rem;
-
-    --graphite: 220 30% 9%;
-    --deep-navy: 222 60% 11%;
+    --border: 214 100% 66%;
+    --input: 222 48% 13%;
+    --ring: 216 100% 59%;
+    --radius: 0.125rem;
   }
 }
 
@@ -43,22 +62,21 @@
   * {
     @apply border-border;
   }
-
   html {
     scroll-behavior: smooth;
   }
-
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--bg-0);
+    color: var(--text-primary);
     font-family: "Golos Text", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
-
   h1,
   h2,
   h3,
   h4,
+  h5,
   .font-display {
     font-family: "Oswald", sans-serif;
     letter-spacing: -0.01em;
@@ -66,30 +84,12 @@
 }
 
 @layer components {
-  /* Глобальный фон цифровой экосистемы */
-  .eco-bg {
-    background-color: hsl(var(--background));
-    background-image:
-      radial-gradient(
-        ellipse 80% 50% at 50% -10%,
-        hsla(205, 100%, 50%, 0.1),
-        transparent
-      ),
-      radial-gradient(
-        ellipse 60% 50% at 90% 20%,
-        hsla(199, 89%, 55%, 0.06),
-        transparent
-      );
-  }
-
-  /* Сетка enterprise */
   .grid-lines {
     background-image:
-      linear-gradient(hsla(205, 100%, 60%, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, hsla(205, 100%, 60%, 0.05) 1px, transparent 1px);
+      linear-gradient(var(--border-tech) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border-tech) 1px, transparent 1px);
     background-size: 64px 64px;
   }
-
   .grid-fade {
     -webkit-mask-image: radial-gradient(
       ellipse 100% 80% at 50% 0%,
@@ -106,20 +106,26 @@
   .glass-card {
     background: linear-gradient(
       160deg,
-      hsla(220, 40%, 10%, 0.8),
-      hsla(222, 47%, 6%, 0.7)
+      rgba(16, 26, 43, 0.88),
+      rgba(11, 18, 32, 0.78)
     );
-    backdrop-filter: blur(12px);
-    border: 1px solid hsla(205, 100%, 60%, 0.12);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-brand);
   }
 
+  .glow-border {
+    transition:
+      border-color 0.3s,
+      box-shadow 0.3s;
+  }
   .glow-border:hover {
-    border-color: hsla(205, 100%, 56%, 0.5);
-    box-shadow: 0 0 40px -8px hsla(205, 100%, 56%, 0.3);
+    border-color: rgba(77, 163, 255, 0.48);
+    box-shadow: 0 0 36px -8px rgba(47, 128, 255, 0.28);
   }
 
   .text-gradient {
-    background: linear-gradient(120deg, hsl(210 40% 98%), hsl(205 100% 70%));
+    background: linear-gradient(135deg, #2f80ff 0%, #00c2ff 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -130,12 +136,52 @@
     padding-right: clamp(1.25rem, 6vw, 9rem);
   }
 
-  .scan-line {
-    background: linear-gradient(
-      90deg,
-      transparent,
-      hsla(205, 100%, 60%, 0.7),
-      transparent
+  .btn-primary {
+    background: linear-gradient(135deg, #2f80ff 0%, #1c5cff 100%);
+    color: #fff;
+    font-family: "Golos Text", sans-serif;
+    font-weight: 600;
+    transition:
+      background 0.25s,
+      box-shadow 0.25s,
+      transform 0.15s;
+  }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #4da3ff 0%, #2f80ff 100%);
+    box-shadow: 0 4px 28px -4px rgba(47, 128, 255, 0.55);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    border: 1px solid var(--border-brand);
+    color: var(--text-primary);
+    font-family: "Golos Text", sans-serif;
+    font-weight: 500;
+    transition:
+      border-color 0.25s,
+      background 0.25s,
+      transform 0.15s;
+  }
+  .btn-ghost:hover {
+    border-color: rgba(77, 163, 255, 0.55);
+    background: rgba(47, 128, 255, 0.09);
+    transform: translateY(-1px);
+  }
+
+  .icon-box {
+    border: 1px solid var(--border-brand);
+    background: rgba(47, 128, 255, 0.09);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .ai-glow {
+    background: radial-gradient(
+      circle,
+      rgba(0, 194, 255, 0.15) 0%,
+      transparent 60%
     );
   }
 }
@@ -147,7 +193,7 @@
   @keyframes fade-up {
     from {
       opacity: 0;
-      transform: translateY(30px);
+      transform: translateY(28px);
     }
     to {
       opacity: 1;
@@ -155,7 +201,7 @@
     }
   }
   .animate-float {
-    animation: float 8s ease-in-out infinite;
+    animation: float 9s ease-in-out infinite;
   }
   @keyframes float {
     0%,
@@ -163,31 +209,19 @@
       transform: translateY(0);
     }
     50% {
-      transform: translateY(-16px);
+      transform: translateY(-14px);
     }
+  }
+  .animate-pulse-glow {
+    animation: pulse-glow 3.5s ease-in-out infinite;
   }
   @keyframes pulse-glow {
     0%,
     100% {
-      opacity: 0.4;
+      opacity: 0.35;
     }
     50% {
       opacity: 1;
     }
-  }
-  .animate-pulse-glow {
-    animation: pulse-glow 4s ease-in-out infinite;
-  }
-
-  @keyframes data-flow {
-    from {
-      background-position: 0 0;
-    }
-    to {
-      background-position: 64px 0;
-    }
-  }
-  .animate-grid {
-    animation: data-flow 6s linear infinite;
   }
 }
