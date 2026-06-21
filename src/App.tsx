@@ -10,6 +10,7 @@ import Contacts from "./pages/Contacts";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Services from "./pages/Services";
+import Products from "./pages/Products";
 import AdminLogin from "./pages/AdminLogin";
 import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
@@ -25,6 +26,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/products" element={<Products />} />
           <Route path="/about" element={<About />} />
           <Route path="/career" element={<Career />} />
           <Route path="/contacts" element={<Contacts />} />

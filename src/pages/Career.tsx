@@ -26,7 +26,7 @@ const gradBrand = `linear-gradient(135deg, ${C.brand} 0%, ${C.tech} 100%)`;
 
 const NAV = [
   { label: 'Направления', href: '/#services' },
-  { label: 'Технологии',  href: '/#tech' },
+  { label: 'Продукты',    href: '/products' },
   { label: 'О компании',  href: '/about' },
   { label: 'Блог',        href: '/blog' },
   { label: 'Карьера',     href: '/career', active: true },

@@ -14,7 +14,7 @@ const GAME_IMG = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4
 
 const NAV = [
   { label: 'Направления', id: '',          href: '/services' },
-  { label: 'Технологии',  id: 'tech',      href: '' },
+  { label: 'Продукты',    id: '',          href: '/products' },
   { label: 'О компании',  id: '',          href: '/about' },
   { label: 'Блог',        id: '',          href: '/blog' },
   { label: 'Карьера',     id: '',          href: '/career' },

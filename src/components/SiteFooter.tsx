@@ -30,6 +30,7 @@ const SiteFooter = () => {
 
   const handleCompany = (t: string) => {
     if (t === 'О компании') { go('/about'); return; }
+    if (t === 'Продукты')   { go('/products'); return; }
     if (t === 'Блог') { go('/blog'); return; }
     if (t === 'Карьера')  { go('/career'); return; }
     if (t === 'Контакты') { go('/contacts'); return; }
@@ -50,7 +51,7 @@ const SiteFooter = () => {
 
         <FooterCol title="Направления" items={DIRECTIONS} onClick={handleDirections} />
 
-        <FooterCol title="Компания" items={['О компании', 'Блог', 'Карьера', 'Контакты']}
+        <FooterCol title="Компания" items={['О компании', 'Продукты', 'Блог', 'Карьера', 'Контакты']}
           onClick={handleCompany} />
 
         <div>
