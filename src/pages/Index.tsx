@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
+import { api, Post } from '@/lib/api';
+
+/* Максимальная ширина контейнера для 2K/4K — контент центрируется */
+const WRAP = { maxWidth: 1680, margin: '0 auto', width: '100%' };
 
 const LOGO     = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png';
 const HERO_IMG = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/04cb0faf-bf58-41b4-9e40-aa2213f851e0.png';
@@ -7,12 +12,12 @@ const DEV_IMG  = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4
 const GAME_IMG = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/a481b456-4750-4058-a433-925f36e12555.png';
 
 const NAV = [
-  { label: 'Направления', id: 'services' },
-  { label: 'Технологии',  id: 'tech' },
-  { label: 'О компании',  id: 'about' },
-  { label: 'Блог',        id: 'blog' },
-  { label: 'Карьера',     id: 'career' },
-  { label: 'Контакты',    id: 'contacts' },
+  { label: 'Направления', id: 'services',  href: '' },
+  { label: 'Технологии',  id: 'tech',      href: '' },
+  { label: 'О компании',  id: 'about',     href: '' },
+  { label: 'Блог',        id: '',          href: '/blog' },
+  { label: 'Карьера',     id: 'career',    href: '' },
+  { label: 'Контакты',    id: 'contacts',  href: '' },
 ];
 
 const HERO_TAGS = [
@@ -74,12 +79,6 @@ const STATS = [
   { value: 'AI-first',    label: 'подход' },
   { value: 'Российская',  label: 'компания' },
   { value: 'Фокус на',    label: 'результат' },
-];
-
-const BLOG = [
-  { cat: 'AI',         title: 'Как AI меняет корпоративные процессы',         date: '12 июня 2026' },
-  { cat: 'Разработка', title: 'Архитектура масштабируемых веб-платформ',       date: '28 апреля 2026' },
-  { cat: 'GovTech',    title: 'Государственные цифровые платформы: тренды 2026', date: '15 марта 2026' },
 ];
 
 /* ───────── helpers ───────── */
@@ -155,11 +154,16 @@ const FooterCol = ({ title, items, onClick }: { title: string; items: string[]; 
 const Index = () => {
   const [scrolled,  setScrolled]  = useState(false);
   const [menuOpen,  setMenuOpen]  = useState(false);
+  const [latestPosts, setLatestPosts] = useState<Post[]>([]);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 40);
     window.addEventListener('scroll', fn);
     return () => window.removeEventListener('scroll', fn);
+  }, []);
+
+  useEffect(() => {
+    api.getPosts({ per: 3 }).then(r => setLatestPosts(r.posts)).catch(() => {});
   }, []);
 
   const scrollTo = (id: string) => {
@@ -177,20 +181,34 @@ const Index = () => {
         style={{ background: `radial-gradient(ellipse 70% 50% at 50% 120%, rgba(47,128,255,0.10), transparent 70%)` }} />
 
       {/* ─── HEADER ─── */}
-      <header className="fixed top-0 inset-x-0 z-50 transition-all duration-500 section-pad flex items-center justify-between"
+      <header className="fixed top-0 inset-x-0 z-50 transition-all duration-500"
         style={{
-          padding: scrolled ? '10px clamp(1.25rem,6vw,9rem)' : '18px clamp(1.25rem,6vw,9rem)',
           background: scrolled ? 'rgba(7,10,15,0.92)' : 'transparent',
           backdropFilter: scrolled ? 'blur(20px)' : 'none',
           borderBottom: scrolled ? `1px solid ${C.border}` : '1px solid transparent',
         }}>
+        <div style={{ ...WRAP, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: scrolled ? '10px clamp(1.25rem,4vw,6rem)' : '18px clamp(1.25rem,4vw,6rem)' }}>
         <button onClick={() => scrollTo('hero')} className="flex items-center gap-3">
-          <img src={LOGO} alt="АО С+" className="h-11 w-auto object-contain" />
-          <span className="font-display font-semibold text-lg tracking-wide hidden sm:block" style={{ color: C.text }}>АО «С+»</span>
+          <img src={LOGO} alt="АО СОФТ ПЛЮС СИСТЕМС" className="h-11 w-auto object-contain" />
+          <div className="hidden sm:block leading-none">
+            <div className="font-display font-semibold text-sm tracking-wide" style={{ color: C.text }}>АО «СОФТ ПЛЮС СИСТЕМС»</div>
+            <div className="text-[10px] uppercase tracking-[0.2em]" style={{ color: C.textMut }}>Digital Engineering</div>
+          </div>
         </button>
 
         <nav className="hidden lg:flex items-center gap-1">
-          {NAV.map((n) => (
+          {NAV.map((n) => n.href ? (
+            <Link key={n.label} to={n.href}
+              className="px-4 py-2 text-sm relative group transition-colors"
+              style={{ color: C.textSec }}
+              onMouseEnter={e => (e.currentTarget.style.color = C.text)}
+              onMouseLeave={e => (e.currentTarget.style.color = C.textSec)}>
+              {n.label}
+              <span className="absolute bottom-1 left-4 right-4 h-px scale-x-0 group-hover:scale-x-100 transition-transform origin-left"
+                style={{ background: C.brand }} />
+            </Link>
+          ) : (
             <button key={n.id} onClick={() => scrollTo(n.id)}
               className="px-4 py-2 text-sm relative group transition-colors"
               style={{ color: C.textSec }}
@@ -217,9 +235,15 @@ const Index = () => {
         </div>
 
         {menuOpen && (
-          <div className="absolute top-full inset-x-0 animate-fade-up section-pad py-4 flex flex-col"
-            style={{ background: 'rgba(7,10,15,0.97)', borderBottom: `1px solid ${C.border}` }}>
-            {NAV.map((n) => (
+          <div className="absolute top-full inset-x-0 animate-fade-up flex flex-col"
+            style={{ background: 'rgba(7,10,15,0.97)', borderBottom: `1px solid ${C.border}`, padding: '0.5rem clamp(1.25rem,4vw,6rem) 1rem' }}>
+            {NAV.map((n) => n.href ? (
+              <Link key={n.label} to={n.href} onClick={() => setMenuOpen(false)}
+                className="py-3 text-left transition-colors border-b"
+                style={{ color: C.textSec, borderColor: C.borderS }}>
+                {n.label}
+              </Link>
+            ) : (
               <button key={n.id} onClick={() => scrollTo(n.id)}
                 className="py-3 text-left transition-colors border-b"
                 style={{ color: C.textSec, borderColor: C.borderS }}
@@ -230,6 +254,7 @@ const Index = () => {
             ))}
           </div>
         )}
+        </div>{/* /WRAP */}
       </header>
 
       {/* ─── HERO ─── */}
@@ -242,7 +267,7 @@ const Index = () => {
         </div>
 
         {/* плавающие теги — только десктоп */}
-        <div className="absolute inset-0 hidden xl:block pointer-events-none" style={{ padding: '0 clamp(1.25rem,6vw,9rem)' }}>
+        <div className="absolute inset-0 hidden xl:block pointer-events-none" style={{ padding: '0 clamp(1.25rem,4vw,6rem)' }}>
           {HERO_TAGS.map((t, i) => (
             <div key={t.title}
               className="absolute animate-fade-up animate-float text-sm font-medium"
@@ -492,21 +517,46 @@ const Index = () => {
       <section id="blog" className="relative py-20 section-pad">
         <div className="grid lg:grid-cols-2 gap-10">
           <div>
-            <SectionHead kicker="Блог" title="Экспертиза, статьи и новости" action="Все статьи" onAction={() => {}} />
+            <SectionHead kicker="Блог" title="Экспертиза, статьи и новости"
+              action="Все статьи" onAction={() => window.location.href = '/blog'} />
             <div className="mt-10 flex flex-col gap-px" style={{ border: `1px solid ${C.borderS}`, background: C.borderS }}>
-              {BLOG.map((b) => (
-                <article key={b.title} className="glass-card glow-border p-6 group cursor-pointer flex items-center justify-between gap-5">
-                  <div>
-                    <div className="text-[10px] uppercase tracking-[0.25em] mb-2" style={{ color: C.brand }}>{b.cat}</div>
-                    <h3 className="font-display text-xl font-semibold mb-1 group-hover:text-gradient transition-colors"
-                      style={{ color: C.text }}>{b.title}</h3>
-                    <span className="text-sm" style={{ color: C.textMut }}>{b.date}</span>
-                  </div>
-                  <Icon name="ArrowUpRight" size={20}
-                    className="shrink-0 group-hover:text-brand transition-colors"
-                    style={{ color: C.textMut } as React.CSSProperties} />
-                </article>
-              ))}
+              {latestPosts.length === 0 ? (
+                /* статика, пока нет статей */
+                [
+                  { cat: 'AI',         title: 'Как AI меняет корпоративные процессы',   date: '12 июня 2026',    slug: '' },
+                  { cat: 'Разработка', title: 'Архитектура масштабируемых веб-платформ', date: '28 апреля 2026',  slug: '' },
+                  { cat: 'GovTech',    title: 'Цифровые платформы: тренды 2026',         date: '15 марта 2026',   slug: '' },
+                ].map((b) => (
+                  <article key={b.title} className="glass-card glow-border p-6 group flex items-center justify-between gap-5">
+                    <div>
+                      <div className="text-[10px] uppercase tracking-[0.25em] mb-2" style={{ color: C.brand }}>{b.cat}</div>
+                      <h3 className="font-display text-xl font-semibold mb-1" style={{ color: C.text }}>{b.title}</h3>
+                      <span className="text-sm" style={{ color: C.textMut }}>{b.date}</span>
+                    </div>
+                    <Icon name="ArrowUpRight" size={20} style={{ color: C.textMut } as React.CSSProperties} />
+                  </article>
+                ))
+              ) : (
+                latestPosts.map((p) => (
+                  <Link key={p.id} to={`/blog/${p.slug}`}
+                    className="glass-card glow-border p-6 group flex items-center justify-between gap-5 transition-all"
+                    style={{ background: C.bg1 }}
+                    onMouseEnter={e => (e.currentTarget.style.background = C.bg2)}
+                    onMouseLeave={e => (e.currentTarget.style.background = C.bg1)}>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-[0.25em] mb-2" style={{ color: C.brand }}>{p.category || 'Статья'}</div>
+                      <h3 className="font-display text-xl font-semibold mb-1 group-hover:text-gradient"
+                        style={{ color: C.text }}>{p.title}</h3>
+                      <span className="text-sm" style={{ color: C.textMut }}>
+                        {p.published_at ? new Date(p.published_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
+                      </span>
+                    </div>
+                    <Icon name="ArrowUpRight" size={20}
+                      className="shrink-0 group-hover:text-brand transition-colors"
+                      style={{ color: C.textMut } as React.CSSProperties} />
+                  </Link>
+                ))
+              )}
             </div>
           </div>
 
@@ -615,14 +665,20 @@ const Index = () => {
         <div className="grid md:grid-cols-4 gap-10">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <img src={LOGO} alt="АО С+" className="h-10 w-auto object-contain" />
-              <span className="font-display font-semibold" style={{ color: C.text }}>АО «С+»</span>
+              <img src={LOGO} alt="АО СОФТ ПЛЮС СИСТЕМС" className="h-10 w-auto object-contain" />
+              <div className="leading-none">
+                <div className="font-display font-semibold text-sm" style={{ color: C.text }}>АО «СОФТ ПЛЮС СИСТЕМС»</div>
+              </div>
             </div>
             <p className="text-sm" style={{ color: C.textMut }}>Российская IT-компания полного цикла.</p>
           </div>
           <FooterCol title="Направления" items={SERVICES.map((s) => s.title)} />
           <FooterCol title="Компания" items={['О компании','Блог','Карьера','Контакты']}
-            onClick={(t) => { const m: Record<string,string> = {'О компании':'about','Блог':'blog','Карьера':'career','Контакты':'contacts'}; if (m[t]) scrollTo(m[t]); }} />
+            onClick={(t) => {
+              const m: Record<string,string> = {'О компании':'about','Карьера':'career','Контакты':'contacts'};
+              if (t === 'Блог') { window.location.href = '/blog'; return; }
+              if (m[t]) scrollTo(m[t]);
+            }} />
           <div>
             <div className="font-display font-semibold mb-4" style={{ color: C.text }}>Контакты</div>
             <div className="flex flex-col gap-2 text-sm" style={{ color: C.textMut }}>
@@ -642,8 +698,10 @@ const Index = () => {
             </div>
           </div>
         </div>
-        <div className="mt-12 pt-8 text-xs" style={{ borderTop: `1px solid ${C.borderS}`, color: C.textMut }}>
-          © 2026 АО «С+». Все права защищены.
+        <div className="mt-12 pt-8 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+          style={{ borderTop: `1px solid ${C.borderS}`, color: C.textMut }}>
+          <span>© 2026 АО «СОФТ ПЛЮС СИСТЕМС». Все права защищены.</span>
+          <a href="/admin/login" className="hover:underline" style={{ color: C.textMut }}>Вход в CMS</a>
         </div>
       </footer>
     </div>
