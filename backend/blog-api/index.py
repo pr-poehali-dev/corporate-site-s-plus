@@ -285,6 +285,30 @@ def handler(event: dict, context) -> dict:
             cdn = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/{filename}"
             return ok({"url": cdn})
 
+        # ── SETUP: создать первого администратора (только если таблица пустая) ──
+        if path == "/setup" and method == "POST":
+            b = parse_body(event)
+            username = b.get("username", "").strip()
+            password = b.get("password", "").strip()
+            display  = b.get("display_name", username)
+            if not username or not password:
+                return err("username и password обязательны")
+            conn, cur = get_db()
+            cur.execute(f"SELECT COUNT(*) FROM {T('admins')}")
+            count = cur.fetchone()[0]
+            if count > 0:
+                conn.close()
+                return err("Администратор уже создан", 403)
+            pw_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt(12)).decode()
+            cur.execute(
+                f"INSERT INTO {T('admins')} (username, password_hash, display_name) VALUES (%s,%s,%s) RETURNING id",
+                (username, pw_hash, display)
+            )
+            new_id = cur.fetchone()[0]
+            conn.commit()
+            conn.close()
+            return ok({"created": new_id, "username": username}, 201)
+
         return err("Not found", 404)
 
     except ValueError as e:
