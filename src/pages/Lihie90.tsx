@@ -204,6 +204,23 @@ const Lihie90 = () => {
 
         <div className="relative section-pad pt-44 pb-24 flex flex-col justify-end" style={{ minHeight: '90vh' }}>
           <div className="max-w-2xl">
+            {/* Breadcrumbs */}
+            <div className="flex items-center gap-2 mb-6 text-sm">
+              <Link to="/" className="transition-colors" style={{ color: C.textMut }}
+                onMouseEnter={e => { e.currentTarget.style.color = C.text; }}
+                onMouseLeave={e => { e.currentTarget.style.color = C.textMut; }}>
+                Главная
+              </Link>
+              <Icon name="ChevronRight" size={14} style={{ color: C.textMut } as React.CSSProperties} />
+              <Link to="/products" className="transition-colors" style={{ color: C.textMut }}
+                onMouseEnter={e => { e.currentTarget.style.color = C.gold; }}
+                onMouseLeave={e => { e.currentTarget.style.color = C.textMut; }}>
+                Продукты
+              </Link>
+              <Icon name="ChevronRight" size={14} style={{ color: C.textMut } as React.CSSProperties} />
+              <span style={{ color: C.gold }}>Лихие 90-е</span>
+            </div>
+
             <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-5 text-xs font-semibold uppercase tracking-widest"
               style={{ border: `1px solid rgba(232,160,32,0.4)`, color: C.gold, background: 'rgba(232,160,32,0.08)' }}>
               <Icon name="Gamepad2" size={13} />
