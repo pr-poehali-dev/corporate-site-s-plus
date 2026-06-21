@@ -28,7 +28,7 @@ const NAV = [
   { label: 'О компании',  href: '/about', active: true },
   { label: 'Блог',        href: '/blog' },
   { label: 'Карьера',     href: '/career' },
-  { label: 'Контакты',    href: '/#contacts' },
+  { label: 'Контакты',    href: '/contacts' },
 ];
 
 const DIRECTIONS = [
@@ -85,7 +85,7 @@ const About = () => {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  const goContacts = () => navigate('/#contacts');
+  const goContacts = () => navigate('/contacts');
 
   return (
     <div style={{ background: C.bg0, color: C.text, minHeight: '100vh', overflowX: 'hidden' }}>
@@ -424,7 +424,7 @@ const About = () => {
                   onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
                   Связаться с нами <Icon name="ArrowRight" size={16} />
                 </button>
-                <Link to="/#contacts"
+                <Link to="/contacts"
                   className="inline-flex items-center gap-2 px-7 py-3.5 font-semibold transition-all"
                   style={{ border: `1px solid ${C.border}`, color: C.textSec }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = C.brand; e.currentTarget.style.color = C.text; }}

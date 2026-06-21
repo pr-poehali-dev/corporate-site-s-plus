@@ -30,7 +30,7 @@ const NAV = [
   { label: 'О компании',  href: '/about' },
   { label: 'Блог',        href: '/blog' },
   { label: 'Карьера',     href: '/career', active: true },
-  { label: 'Контакты',    href: '/#contacts' },
+  { label: 'Контакты',    href: '/contacts' },
 ];
 
 const WHY = [
@@ -86,7 +86,7 @@ const Career = () => {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  const goContacts = () => navigate('/#contacts');
+  const goContacts = () => navigate('/contacts');
 
   return (
     <div style={{ background: C.bg0, color: C.text, minHeight: '100vh', overflowX: 'hidden' }}>

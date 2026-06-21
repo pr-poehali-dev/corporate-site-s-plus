@@ -30,7 +30,7 @@ const SiteFooter = () => {
     if (t === 'О компании') { go('/about'); return; }
     if (t === 'Блог') { go('/blog'); return; }
     if (t === 'Карьера')  { go('/career'); return; }
-    if (t === 'Контакты') { go('/#contacts'); return; }
+    if (t === 'Контакты') { go('/contacts'); return; }
   };
 
   return (
