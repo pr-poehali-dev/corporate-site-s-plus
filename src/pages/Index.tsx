@@ -18,7 +18,7 @@ const NAV = [
   { label: 'О компании',  id: '',          href: '/about' },
   { label: 'Блог',        id: '',          href: '/blog' },
   { label: 'Карьера',     id: '',          href: '/career' },
-  { label: 'Контакты',    id: 'contacts',  href: '' },
+  { label: 'Контакты',    id: '',          href: '/contacts' },
 ];
 
 const HERO_TAGS = [

@@ -4,7 +4,7 @@ import Icon from '@/components/ui/icon';
 import SiteFooter from '@/components/SiteFooter';
 
 const LOGO     = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png';
-const HERO_IMG = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fc05d4a0-bfe9-4fd4-a480-fdda49e6bd37.png';
+const HERO_IMG = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/77b32b4e-cc74-4e2d-b7be-02262fd51cd0.png';
 
 const C = {
   bg0:     '#070A0F',
