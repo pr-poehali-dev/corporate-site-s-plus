@@ -134,78 +134,80 @@ const Services = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    const fn = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', fn);
+    return () => window.removeEventListener('scroll', fn);
   }, []);
 
-  const go = (href: string) => {
-    setMenuOpen(false);
-    if (href.startsWith('/#')) {
-      navigate('/');
-      setTimeout(() => {
-        const el = document.getElementById(href.slice(2));
-        el?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    } else {
-      navigate(href);
-    }
-  };
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  const goContacts = () => navigate('/contacts');
 
   return (
-    <div style={{ background: C.bg0, color: C.text, minHeight: '100vh' }}>
+    <div style={{ background: C.bg0, color: C.text, minHeight: '100vh', overflowX: 'hidden' }}>
 
-      {/* NAV */}
-      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-        style={{ background: scrolled ? 'rgba(7,10,15,0.95)' : 'transparent', backdropFilter: scrolled ? 'blur(12px)' : 'none', borderBottom: scrolled ? `1px solid ${C.borderS}` : 'none' }}>
-        <div className="section-pad flex items-center justify-between h-16">
+      <div className="fixed inset-0 pointer-events-none grid-lines grid-fade" style={{ opacity: 0.6 }} />
+      <div className="fixed inset-0 pointer-events-none"
+        style={{ background: `radial-gradient(ellipse 70% 50% at 50% 120%, rgba(47,128,255,0.10), transparent 70%)` }} />
+
+      {/* ─── HEADER ─── */}
+      <header className="fixed top-0 inset-x-0 z-50 transition-all duration-500"
+        style={{
+          background: scrolled ? 'rgba(7,10,15,0.92)' : 'transparent',
+          backdropFilter: scrolled ? 'blur(20px)' : 'none',
+          borderBottom: scrolled ? `1px solid ${C.border}` : '1px solid transparent',
+        }}>
+        <div className="section-pad flex items-center justify-between"
+          style={{ paddingTop: scrolled ? 10 : 18, paddingBottom: scrolled ? 10 : 18 }}>
+
           <Link to="/" className="flex items-center gap-3">
-            <img src={LOGO} alt="С+" className="h-9 w-auto object-contain" />
+            <img src={LOGO} alt="АО СОФТ ПЛЮС СИСТЕМС" className="h-11 w-auto object-contain" />
+            <span className="font-display font-semibold hidden sm:block"
+              style={{ color: C.text, fontSize: 'clamp(0.8rem,1.2vw,1rem)', lineHeight: 1 }}>
+              АО «СОФТ ПЛЮС СИСТЕМС»
+            </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8">
-            {NAV.map(n => (
-              <button key={n.label} onClick={() => go(n.href)}
-                className="text-sm font-medium transition-colors"
+          <nav className="hidden lg:flex items-center gap-1">
+            {NAV.map((n) => (
+              <Link key={n.label} to={n.href}
+                className="px-4 py-2 text-sm relative group transition-colors"
                 style={{ color: n.active ? C.brand : C.textSec }}
-                onMouseEnter={e => { if (!n.active) (e.currentTarget as HTMLElement).style.color = C.text; }}
-                onMouseLeave={e => { if (!n.active) (e.currentTarget as HTMLElement).style.color = C.textSec; }}>
+                onMouseEnter={e => { if (!n.active) e.currentTarget.style.color = C.text; }}
+                onMouseLeave={e => { if (!n.active) e.currentTarget.style.color = C.textSec; }}>
                 {n.label}
-              </button>
+                <span className="absolute bottom-1 left-4 right-4 h-px transition-transform origin-left"
+                  style={{ background: gradBrand, transform: n.active ? 'scaleX(1)' : 'scaleX(0)' }} />
+              </Link>
             ))}
           </nav>
 
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/contacts')}
+            <button onClick={goContacts}
               className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-all"
               style={{ border: `1px solid ${C.brand}`, color: C.brand, background: 'transparent' }}
               onMouseEnter={e => { const t = e.currentTarget; t.style.background = C.brand; t.style.color = '#fff'; }}
               onMouseLeave={e => { const t = e.currentTarget; t.style.background = 'transparent'; t.style.color = C.brand; }}>
-              Обсудить проект
+              Обсудить проект <Icon name="ArrowUpRight" size={16} />
             </button>
-            <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
-              <Icon name={menuOpen ? 'X' : 'Menu'} size={24} style={{ color: C.text }} />
+            <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden p-2" style={{ color: C.text }}>
+              <Icon name={menuOpen ? 'X' : 'Menu'} size={24} />
             </button>
           </div>
-        </div>
 
-        {menuOpen && (
-          <div className="md:hidden section-pad pb-6 flex flex-col gap-4"
-            style={{ background: 'rgba(7,10,15,0.98)', borderBottom: `1px solid ${C.borderS}` }}>
-            {NAV.map(n => (
-              <button key={n.label} onClick={() => go(n.href)}
-                className="text-left text-base font-medium py-1"
-                style={{ color: n.active ? C.brand : C.text }}>
-                {n.label}
-              </button>
-            ))}
-            <button onClick={() => { setMenuOpen(false); navigate('/contacts'); }}
-              className="mt-2 px-5 py-3 text-sm font-semibold text-center"
-              style={{ background: C.brand, color: '#fff' }}>
-              Обсудить проект
-            </button>
-          </div>
-        )}
+          {menuOpen && (
+            <div className="absolute top-full inset-x-0 flex flex-col"
+              style={{ background: 'rgba(7,10,15,0.97)', borderBottom: `1px solid ${C.border}`, padding: '0.5rem clamp(1.25rem,4vw,6rem) 1rem' }}>
+              {NAV.map((n) => (
+                <Link key={n.label} to={n.href} onClick={() => setMenuOpen(false)}
+                  className="py-3 text-left transition-colors border-b"
+                  style={{ color: n.active ? C.brand : C.textSec, borderColor: C.borderS }}>
+                  {n.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       </header>
 
       {/* HERO */}

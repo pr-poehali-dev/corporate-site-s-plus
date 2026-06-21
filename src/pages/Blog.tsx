@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
+import SiteFooter from '@/components/SiteFooter';
 import { api, Post } from '@/lib/api';
 
 const LOGO = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png';
@@ -11,6 +13,17 @@ const C = {
   textSec: '#B6C2D1', textMut: '#7A8AA0',
   border: 'rgba(77,163,255,0.15)', borderS: 'rgba(255,255,255,0.05)',
 };
+
+const gradBrand = `linear-gradient(135deg, ${C.brand} 0%, ${C.tech} 100%)`;
+
+const NAV = [
+  { label: 'Направления', href: '/services' },
+  { label: 'Технологии',  href: '/#tech' },
+  { label: 'О компании',  href: '/about' },
+  { label: 'Блог',        href: '/blog', active: true },
+  { label: 'Карьера',     href: '/career' },
+  { label: 'Контакты',    href: '/contacts' },
+];
 
 function formatDate(s?: string) {
   if (!s) return '';
@@ -24,6 +37,15 @@ export default function Blog() {
   const [category, setCategory] = useState('');
   const [tag, setTag]           = useState('');
   const [loading, setLoading]   = useState(true);
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', fn);
+    return () => window.removeEventListener('scroll', fn);
+  }, []);
 
   const PER = 9;
 
@@ -45,21 +67,67 @@ export default function Blog() {
       {/* grid overlay */}
       <div className="fixed inset-0 pointer-events-none grid-lines grid-fade" style={{ opacity: 0.5 }} />
 
-      {/* header */}
-      <header className="sticky top-0 z-40 section-pad flex items-center justify-between py-4"
-        style={{ background: 'rgba(7,10,15,0.92)', backdropFilter: 'blur(20px)', borderBottom: `1px solid ${C.border}` }}>
-        <Link to="/" className="flex items-center gap-3">
-          <img src={LOGO} alt="АО СОФТ ПЛЮС СИСТЕМС" className="h-10 w-auto" />
-          <span className="font-display font-semibold hidden sm:block" style={{ color: C.text }}>АО «СОФТ ПЛЮС СИСТЕМС»</span>
-        </Link>
-        <Link to="/" className="inline-flex items-center gap-2 text-sm transition-colors" style={{ color: C.textSec }}
-          onMouseEnter={e => (e.currentTarget.style.color = C.text)}
-          onMouseLeave={e => (e.currentTarget.style.color = C.textSec)}>
-          <Icon name="ArrowLeft" size={16} /> На главную
-        </Link>
+      {/* ─── HEADER ─── */}
+      <header className="fixed top-0 inset-x-0 z-50 transition-all duration-500"
+        style={{
+          background: scrolled ? 'rgba(7,10,15,0.92)' : 'transparent',
+          backdropFilter: scrolled ? 'blur(20px)' : 'none',
+          borderBottom: scrolled ? `1px solid ${C.border}` : '1px solid transparent',
+        }}>
+        <div className="section-pad flex items-center justify-between"
+          style={{ paddingTop: scrolled ? 10 : 18, paddingBottom: scrolled ? 10 : 18 }}>
+
+          <Link to="/" className="flex items-center gap-3">
+            <img src={LOGO} alt="АО СОФТ ПЛЮС СИСТЕМС" className="h-11 w-auto object-contain" />
+            <span className="font-display font-semibold hidden sm:block"
+              style={{ color: C.text, fontSize: 'clamp(0.8rem,1.2vw,1rem)', lineHeight: 1 }}>
+              АО «СОФТ ПЛЮС СИСТЕМС»
+            </span>
+          </Link>
+
+          <nav className="hidden lg:flex items-center gap-1">
+            {NAV.map((n) => (
+              <Link key={n.label} to={n.href}
+                className="px-4 py-2 text-sm relative group transition-colors"
+                style={{ color: n.active ? C.brand : C.textSec }}
+                onMouseEnter={e => { if (!n.active) e.currentTarget.style.color = C.text; }}
+                onMouseLeave={e => { if (!n.active) e.currentTarget.style.color = C.textSec; }}>
+                {n.label}
+                <span className="absolute bottom-1 left-4 right-4 h-px transition-transform origin-left"
+                  style={{ background: gradBrand, transform: n.active ? 'scaleX(1)' : 'scaleX(0)' }} />
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate('/contacts')}
+              className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-all"
+              style={{ border: `1px solid ${C.brand}`, color: C.brand, background: 'transparent' }}
+              onMouseEnter={e => { const t = e.currentTarget; t.style.background = C.brand; t.style.color = '#fff'; }}
+              onMouseLeave={e => { const t = e.currentTarget; t.style.background = 'transparent'; t.style.color = C.brand; }}>
+              Обсудить проект <Icon name="ArrowUpRight" size={16} />
+            </button>
+            <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden p-2" style={{ color: C.text }}>
+              <Icon name={menuOpen ? 'X' : 'Menu'} size={24} />
+            </button>
+          </div>
+
+          {menuOpen && (
+            <div className="absolute top-full inset-x-0 flex flex-col"
+              style={{ background: 'rgba(7,10,15,0.97)', borderBottom: `1px solid ${C.border}`, padding: '0.5rem clamp(1.25rem,4vw,6rem) 1rem' }}>
+              {NAV.map((n) => (
+                <Link key={n.label} to={n.href} onClick={() => setMenuOpen(false)}
+                  className="py-3 text-left transition-colors border-b"
+                  style={{ color: n.active ? C.brand : C.textSec, borderColor: C.borderS }}>
+                  {n.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       </header>
 
-      <main className="section-pad py-20" style={{ maxWidth: 1600, margin: '0 auto' }}>
+      <main className="section-pad py-20 pt-36" style={{ maxWidth: 1600, margin: '0 auto' }}>
         {/* hero */}
         <div className="mb-16">
           <div className="flex items-center gap-3 mb-4">
@@ -176,6 +244,10 @@ export default function Blog() {
           </div>
         )}
       </main>
+
+      <div className="section-pad" style={{ background: C.bg0 }}>
+        <SiteFooter />
+      </div>
     </div>
   );
 }
