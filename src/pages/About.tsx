@@ -27,7 +27,7 @@ const NAV = [
   { label: 'Технологии',  href: '/#tech' },
   { label: 'О компании',  href: '/about', active: true },
   { label: 'Блог',        href: '/blog' },
-  { label: 'Карьера',     href: '/#career' },
+  { label: 'Карьера',     href: '/career' },
   { label: 'Контакты',    href: '/#contacts' },
 ];
 
