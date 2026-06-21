@@ -26,6 +26,8 @@ const FooterCol = ({ title, items, onClick }: { title: string; items: string[]; 
 const SiteFooter = () => {
   const go = (path: string) => { window.location.href = path; };
 
+  const handleDirections = (t: string) => { go('/services'); };
+
   const handleCompany = (t: string) => {
     if (t === 'О компании') { go('/about'); return; }
     if (t === 'Блог') { go('/blog'); return; }
@@ -46,7 +48,7 @@ const SiteFooter = () => {
           <p className="text-sm" style={{ color: C.textMut }}>Российская IT-компания полного цикла.</p>
         </div>
 
-        <FooterCol title="Направления" items={DIRECTIONS} />
+        <FooterCol title="Направления" items={DIRECTIONS} onClick={handleDirections} />
 
         <FooterCol title="Компания" items={['О компании', 'Блог', 'Карьера', 'Контакты']}
           onClick={handleCompany} />

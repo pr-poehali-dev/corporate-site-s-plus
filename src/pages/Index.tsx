@@ -13,7 +13,7 @@ const DEV_IMG  = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4
 const GAME_IMG = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/a481b456-4750-4058-a433-925f36e12555.png';
 
 const NAV = [
-  { label: 'Направления', id: 'services',  href: '' },
+  { label: 'Направления', id: '',          href: '/services' },
   { label: 'Технологии',  id: 'tech',      href: '' },
   { label: 'О компании',  id: '',          href: '/about' },
   { label: 'Блог',        id: '',          href: '/blog' },
