@@ -84,7 +84,7 @@ export default function AdminLogin() {
             </div>
           )}
 
-          <button type="submit" disabled={loading || !username || !password}
+          <button type="submit" disabled={loading}
             className="btn-primary flex items-center justify-center gap-2 px-6 py-3.5 font-semibold disabled:opacity-50 mt-1">
             {loading ? <><Icon name="Loader" size={18} className="animate-spin" /> Вход...</> : <>Войти <Icon name="ArrowRight" size={18} /></>}
           </button>
