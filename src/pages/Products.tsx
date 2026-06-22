@@ -142,7 +142,7 @@ const Products = () => {
             АО «С+»
           </div>
           <h1 className="font-display font-bold leading-tight mb-6"
-            style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: C.text }}>
+            style={{ fontSize: 'var(--fs-h1)', color: C.text }}>
             Собственные{' '}
             <span style={{ background: gradBrand, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               продукты

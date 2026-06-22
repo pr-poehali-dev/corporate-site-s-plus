@@ -29,6 +29,13 @@
     --text-secondary: #b6c2d1;
     --text-muted: #7a8aa0;
 
+    /* ── Размеры шрифтов (4 уровня) ── */
+    --fs-h1: clamp(2.5rem, 5.5vw, 5.5rem); /* страничный заголовок */
+    --fs-h2: clamp(1.75rem, 3.5vw, 3.25rem); /* секционный заголовок */
+    --fs-h3: clamp(1.15rem, 1.8vw, 1.375rem); /* заголовок карточки   */
+    --fs-body: 1rem; /* основной текст       */
+    --fs-meta: 0.8125rem; /* метки, даты, капсель */
+
     /* ── Линии / сетка ── */
     --border-brand: rgba(77, 163, 255, 0.15);
     --border-tech: rgba(0, 194, 255, 0.08);
@@ -304,6 +311,96 @@
     }
     50% {
       opacity: 1;
+    }
+  }
+
+  /* ── HERO live effects ── */
+  .hero-glow-1 {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    right: 10%;
+    top: -10%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(47, 128, 255, 0.18) 0%,
+      transparent 70%
+    );
+    animation: hero-pulse 5s ease-in-out infinite;
+  }
+  .hero-glow-2 {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    right: 35%;
+    top: 30%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(0, 194, 255, 0.12) 0%,
+      transparent 70%
+    );
+    animation: hero-pulse 7s ease-in-out infinite 1.5s;
+  }
+  .hero-glow-3 {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    right: 20%;
+    top: 55%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(47, 128, 255, 0.1) 0%,
+      transparent 70%
+    );
+    animation: hero-pulse 6s ease-in-out infinite 3s;
+  }
+  @keyframes hero-pulse {
+    0%,
+    100% {
+      opacity: 0.4;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.15);
+    }
+  }
+  .hero-lightning-1 {
+    animation: lightning-flicker 4s ease-in-out infinite;
+  }
+  .hero-lightning-2 {
+    animation: lightning-flicker 5.5s ease-in-out infinite 1.2s;
+  }
+  .hero-lightning-3 {
+    animation: lightning-flicker 6s ease-in-out infinite 2.8s;
+  }
+  @keyframes lightning-flicker {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    10%,
+    12% {
+      opacity: 1;
+    }
+    11% {
+      opacity: 0.3;
+    }
+    20% {
+      opacity: 0;
+    }
+    60%,
+    62% {
+      opacity: 0.7;
+    }
+    61% {
+      opacity: 0.1;
+    }
+    70% {
+      opacity: 0;
     }
   }
 }

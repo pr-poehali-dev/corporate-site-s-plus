@@ -134,7 +134,7 @@ export default function Blog() {
             <span className="w-8 h-px" style={{ background: `linear-gradient(90deg,${C.brand},${C.tech})` }} />
             <span className="text-xs uppercase tracking-[0.3em]" style={{ color: C.brand }}>Блог</span>
           </div>
-          <h1 className="font-display font-bold mb-4" style={{ fontSize: 'clamp(2rem,4vw,3.5rem)', color: C.text }}>
+          <h1 className="font-display font-bold mb-4" style={{ fontSize: 'var(--fs-h1)', color: C.text }}>
             Экспертиза, статьи и новости
           </h1>
           <p style={{ color: C.textSec }}>Материалы об архитектуре, AI и цифровой трансформации от команды АО «СОФТ ПЛЮС СИСТЕМС».</p>

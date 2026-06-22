@@ -22,12 +22,12 @@ const NAV = [
 ];
 
 const HERO_TAGS = [
-  { title: 'Разработка ПО',          side: 'left',  top: '14%' },
-  { title: 'Консалтинг',             side: 'left',  top: '44%' },
-  { title: 'Игровые проекты',        side: 'left',  top: '73%' },
-  { title: 'AI и автоматизация',     side: 'right', top: '10%' },
-  { title: 'Маркетинг tech-компаний',side: 'right', top: '40%' },
-  { title: 'Платформа С+',           side: 'right', top: '70%' },
+  { title: 'AI и автоматизация',     side: 'right', top: '8%'  },
+  { title: 'Разработка ПО',          side: 'right', top: '26%' },
+  { title: 'Маркетинг tech-компаний',side: 'right', top: '44%' },
+  { title: 'Консалтинг',             side: 'right', top: '62%' },
+  { title: 'Игровые проекты',        side: 'right', top: '80%' },
+  { title: 'Платформа С+',           side: 'right', top: '92%' },
 ];
 
 const SERVICES = [
@@ -114,8 +114,8 @@ const SectionHead = ({
         <span className="w-8 h-px" style={{ background: gradBrand }} />
         <span className="text-xs uppercase tracking-[0.3em]" style={{ color: C.brand }}>{kicker}</span>
       </div>
-      <h2 className="font-display font-bold leading-tight" style={{ fontSize: 'clamp(1.75rem,3.5vw,3.25rem)', color: C.text }}>{title}</h2>
-      {sub && <p className="text-lg mt-4" style={{ color: C.textSec }}>{sub}</p>}
+      <h2 className="font-display font-bold leading-tight" style={{ fontSize: 'var(--fs-h2)', color: C.text }}>{title}</h2>
+      {sub && <p className="mt-4" style={{ fontSize: 'var(--fs-body)', color: C.textSec }}>{sub}</p>}
     </div>
     {action && (
       <button onClick={onAction}
@@ -262,6 +262,19 @@ const Index = () => {
           <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${C.bg0} 30%, rgba(7,10,15,0.3) 70%, transparent)` }} />
           <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${C.bg0} 0%, transparent 60%)` }} />
           <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, rgba(7,10,15,0.7) 0%, transparent 30%)` }} />
+          {/* живые эффекты свечения */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div className="hero-glow-1" />
+            <div className="hero-glow-2" />
+            <div className="hero-glow-3" />
+            <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.18 }}>
+              <line className="hero-lightning-1" x1="62%" y1="0%" x2="55%" y2="35%" stroke="#2f80ff" strokeWidth="1.2" strokeLinecap="round" />
+              <line className="hero-lightning-1" x1="55%" y1="35%" x2="60%" y2="50%" stroke="#2f80ff" strokeWidth="0.8" strokeLinecap="round" />
+              <line className="hero-lightning-2" x1="78%" y1="5%" x2="70%" y2="40%" stroke="#60b0ff" strokeWidth="1" strokeLinecap="round" />
+              <line className="hero-lightning-2" x1="70%" y1="40%" x2="75%" y2="60%" stroke="#60b0ff" strokeWidth="0.7" strokeLinecap="round" />
+              <line className="hero-lightning-3" x1="90%" y1="10%" x2="82%" y2="45%" stroke="#2f80ff" strokeWidth="0.9" strokeLinecap="round" />
+            </svg>
+          </div>
         </div>
 
         {/* плавающие теги — только десктоп, строго внутри WRAP */}
@@ -301,9 +314,10 @@ const Index = () => {
             </div>
 
             <h1 className="font-display font-bold leading-[1.02] mb-8 animate-fade-up"
-              style={{ fontSize: 'clamp(2.5rem,5.5vw,5.5rem)', animationDelay: '0.1s' }}>
+              style={{ fontSize: 'var(--fs-h1)', animationDelay: '0.1s' }}>
               <span className="block text-gradient">Создаём технологии,</span>
-              <span className="block" style={{ color: C.text }}>которые меняют бизнес</span>
+              <span className="block" style={{ color: C.text }}>которые меняют бизнес,</span>
+              <span className="block" style={{ color: C.text }}>государство</span>
               <span className="block" style={{ color: C.textSec }}>и строят будущее</span>
             </h1>
 
@@ -342,7 +356,7 @@ const Index = () => {
       {/* ─── SERVICES ─── */}
       <section id="services" className="relative py-28 section-pad">
         <SectionHead kicker="Направления деятельности" title="Решаем сложные задачи и создаём продукты"
-          action="Все направления" onAction={() => scrollTo('solutions')} />
+          action="Все направления" onAction={() => window.location.href = '/services'} />
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-px mt-16"
           style={{ border: `1px solid ${C.borderS}`, background: C.borderS }}>
           {SERVICES.map((s, i) => (
@@ -352,8 +366,8 @@ const Index = () => {
               <div className="icon-box w-14 h-14 mb-6">
                 <Icon name={s.icon} size={26} style={{ color: C.brand } as React.CSSProperties} />
               </div>
-              <h3 className="font-display text-2xl font-semibold mb-3" style={{ color: C.text }}>{s.title}</h3>
-              <p className="leading-relaxed mb-6" style={{ color: C.textSec }}>{s.desc}</p>
+              <h3 className="font-display font-semibold mb-3" style={{ fontSize: 'var(--fs-h3)', color: C.text }}>{s.title}</h3>
+              <p className="leading-relaxed mb-6" style={{ fontSize: 'var(--fs-body)', color: C.textSec }}>{s.desc}</p>
               <Icon name="ArrowRight" size={20}
                 className="group-hover:translate-x-1 transition-all"
                 style={{ color: C.textMut } as React.CSSProperties} />
@@ -504,10 +518,10 @@ const Index = () => {
                   </div>
                 ))}
               </div>
-              <button className="inline-flex items-center gap-2 font-medium mt-8 hover:gap-3 transition-all"
+              <Link to="/about" className="inline-flex items-center gap-2 font-medium mt-8 hover:gap-3 transition-all"
                 style={{ color: C.brand }}>
                 Подробнее о компании <Icon name="ArrowRight" size={16} />
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -530,7 +544,7 @@ const Index = () => {
                   <article key={b.title} className="glass-card glow-border p-6 group flex items-center justify-between gap-5">
                     <div>
                       <div className="text-[10px] uppercase tracking-[0.25em] mb-2" style={{ color: C.brand }}>{b.cat}</div>
-                      <h3 className="font-display text-xl font-semibold mb-1" style={{ color: C.text }}>{b.title}</h3>
+                      <h3 className="font-display font-semibold mb-1" style={{ fontSize: 'var(--fs-h3)', color: C.text }}>{b.title}</h3>
                       <span className="text-sm" style={{ color: C.textMut }}>{b.date}</span>
                     </div>
                     <Icon name="ArrowUpRight" size={20} style={{ color: C.textMut } as React.CSSProperties} />
@@ -545,8 +559,8 @@ const Index = () => {
                     onMouseLeave={e => (e.currentTarget.style.background = C.bg1)}>
                     <div>
                       <div className="text-[10px] uppercase tracking-[0.25em] mb-2" style={{ color: C.brand }}>{p.category || 'Статья'}</div>
-                      <h3 className="font-display text-xl font-semibold mb-1 group-hover:text-gradient"
-                        style={{ color: C.text }}>{p.title}</h3>
+                      <h3 className="font-display font-semibold mb-1 group-hover:text-gradient"
+                        style={{ fontSize: 'var(--fs-h3)', color: C.text }}>{p.title}</h3>
                       <span className="text-sm" style={{ color: C.textMut }}>
                         {p.published_at ? new Date(p.published_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
                       </span>
@@ -566,7 +580,7 @@ const Index = () => {
             <div className="relative">
               <div className="text-xs uppercase tracking-[0.3em] mb-4" style={{ color: C.brand }}>Карьера</div>
               <h2 className="font-display font-bold mb-5"
-                style={{ fontSize: 'clamp(1.75rem,3.5vw,3rem)', color: C.text }}>
+                style={{ fontSize: 'var(--fs-h2)', color: C.text }}>
                 Присоединяйтесь к команде
               </h2>
               <p className="mb-8 max-w-md" style={{ color: C.textSec }}>
@@ -580,11 +594,10 @@ const Index = () => {
                   </span>
                 ))}
               </div>
-              <button onClick={() => scrollTo('contacts')}
-                className="inline-flex items-center gap-2 font-medium hover:gap-3 transition-all"
+              <Link to="/career" className="inline-flex items-center gap-2 font-medium hover:gap-3 transition-all"
                 style={{ color: C.brand }}>
                 Смотреть вакансии <Icon name="ArrowRight" size={16} />
-              </button>
+              </Link>
             </div>
           </div>
         </div>
