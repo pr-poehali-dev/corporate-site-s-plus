@@ -22,12 +22,12 @@ const NAV = [
 ];
 
 const HERO_TAGS = [
-  { title: 'AI и автоматизация',     side: 'right', top: '8%'  },
-  { title: 'Разработка ПО',          side: 'right', top: '26%' },
-  { title: 'Маркетинг tech-компаний',side: 'right', top: '44%' },
-  { title: 'Консалтинг',             side: 'right', top: '62%' },
-  { title: 'Игровые проекты',        side: 'right', top: '80%' },
-  { title: 'Платформа С+',           side: 'right', top: '92%' },
+  { title: 'AI и автоматизация',     left: '55%', top: '8%'  },
+  { title: 'Разработка ПО',          left: '72%', top: '22%' },
+  { title: 'Маркетинг tech-компаний',left: '58%', top: '42%' },
+  { title: 'Консалтинг',             left: '80%', top: '58%' },
+  { title: 'Игровые проекты',        left: '60%', top: '74%' },
+  { title: 'Платформа С+',           left: '76%', top: '88%' },
 ];
 
 const SERVICES = [
@@ -285,7 +285,7 @@ const Index = () => {
                 className="absolute animate-fade-up animate-float text-sm font-medium"
                 style={{
                   top: t.top,
-                  [t.side]: 'clamp(1.25rem,4vw,6rem)',
+                  left: t.left,
                   animationDelay: `${0.6 + i * 0.13}s`,
                   background: 'rgba(11,18,32,0.88)',
                   backdropFilter: 'blur(16px)',
