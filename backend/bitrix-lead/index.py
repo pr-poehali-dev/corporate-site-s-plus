@@ -43,9 +43,9 @@ def handler(event: dict, context) -> dict:
     if company:
         fields['COMPANY_TITLE'] = company
 
-    data = urllib.parse.urlencode({'fields': json.dumps(fields)}).encode()
-    req  = urllib.request.Request(webhook, data=data, method='POST')
-    req.add_header('Content-Type', 'application/x-www-form-urlencoded')
+    payload = json.dumps({'fields': fields}).encode('utf-8')
+    req = urllib.request.Request(webhook, data=payload, method='POST')
+    req.add_header('Content-Type', 'application/json')
 
     with urllib.request.urlopen(req, timeout=10) as resp:
         result = json.loads(resp.read())
