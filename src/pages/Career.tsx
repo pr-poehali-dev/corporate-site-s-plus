@@ -80,8 +80,7 @@ const Career = () => {
   const [scrolled,  setScrolled]  = useState(false);
   const [menuOpen,  setMenuOpen]  = useState(false);
   const [openFaq,   setOpenFaq]   = useState<number | null>(null);
-  const [email,     setEmail]     = useState('');
-  const [agreed,    setAgreed]    = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -368,40 +367,39 @@ const Career = () => {
                 <span className="text-xs uppercase tracking-[0.3em]" style={{ color: C.brand }}>Кадровый резерв</span>
               </div>
               <h2 className="font-display font-bold mb-4" style={{ fontSize: 'clamp(1.5rem,3vw,2.25rem)', color: C.text }}>
-                Оставайтесь на связи
+                Отправьте резюме
               </h2>
               <div className="flex flex-col gap-4 mb-8" style={{ color: C.textSec, lineHeight: 1.75, fontSize: '1rem' }}>
-                <p>Даже если сейчас нет подходящей вакансии, вы можете оставить контактные данные или отправить резюме.</p>
-                <p>Мы регулярно расширяем команду и обязательно рассмотрим вашу кандидатуру при появлении соответствующей позиции.</p>
+                <p>Даже если сейчас нет подходящей вакансии, вы можете отправить резюме — мы обязательно его рассмотрим при появлении соответствующей позиции.</p>
+                <p>Мы регулярно расширяем команду и всегда рады сильным специалистам.</p>
               </div>
-              <div className="p-6" style={{ border: `1px solid ${C.border}`, background: C.bg1 }}>
-                <div className="flex gap-3 mb-3">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    placeholder="Ваш email"
-                    className="flex-1 px-4 py-3 outline-none text-sm transition-colors"
-                    style={{ background: C.bg2, border: `1px solid ${C.border}`, color: C.text }}
-                    onFocus={e => (e.target.style.borderColor = C.brand)}
-                    onBlur={e  => (e.target.style.borderColor = C.border)}
-                  />
-                  <button
-                    className="px-6 py-3 text-sm font-semibold transition-all flex-shrink-0"
+              <div className="p-8 relative overflow-hidden" style={{ border: `1px solid ${C.border}`, background: C.bg1 }}>
+                <div className="absolute top-0 right-0 w-48 h-48 pointer-events-none"
+                  style={{ background: 'radial-gradient(circle, rgba(47,128,255,0.08) 0%, transparent 70%)' }} />
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="w-11 h-11 flex items-center justify-center rounded"
+                      style={{ background: 'rgba(47,128,255,0.12)', border: `1px solid ${C.border}` }}>
+                      <Icon name="Mail" size={20} style={{ color: C.brand }} />
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold" style={{ color: C.text }}>HR-отдел</div>
+                      <div className="text-xs" style={{ color: C.textMut }}>{HR_EMAIL}</div>
+                    </div>
+                  </div>
+                  <p className="text-sm mb-6" style={{ color: C.textSec, lineHeight: 1.65 }}>
+                    Прикрепите резюме и укажите желаемую должность. Мы рассматриваем все обращения и отвечаем в течение 3–5 рабочих дней.
+                  </p>
+                  <a
+                    href={`mailto:${HR_EMAIL}?subject=Резюме`}
+                    className="inline-flex items-center gap-2 px-7 py-3.5 text-sm font-semibold transition-all"
                     style={{ background: gradBrand, color: '#fff' }}
                     onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-                    onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-                    onClick={() => { if (email) window.location.href = `mailto:${HR_EMAIL}?subject=Кадровый резерв&body=Email для связи: ${email}`; }}>
-                    Присоединиться
-                  </button>
+                    onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                    <Icon name="Send" size={16} />
+                    Отправить резюме
+                  </a>
                 </div>
-                <label className="flex items-start gap-2 cursor-pointer">
-                  <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)}
-                    className="mt-0.5 flex-shrink-0" style={{ accentColor: C.brand }} />
-                  <span style={{ color: C.textMut, fontSize: '0.75rem', lineHeight: 1.5 }}>
-                    Я согласен на обработку персональных данных
-                  </span>
-                </label>
               </div>
             </div>
 

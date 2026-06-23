@@ -1,11 +1,10 @@
 import json
 import os
 import urllib.request
-import urllib.parse
 
 
 def handler(event: dict, context) -> dict:
-    """Создаёт лид в Битрикс24 CRM из формы заявки на сайте."""
+    """Создаёт сделку в Битрикс24 CRM (crm.deal.add) из формы заявки на сайте."""
 
     if event.get('httpMethod') == 'OPTIONS':
         return {
@@ -23,22 +22,26 @@ def handler(event: dict, context) -> dict:
     name    = body.get('name', '').strip()
     company = body.get('company', '').strip()
     email   = body.get('email', '').strip()
+    contact = body.get('contact', '').strip()
     task    = body.get('task', '').strip()
+    message = body.get('message', '').strip()
 
-    if not name or not email:
+    contact_value = email or contact
+    if not name or not contact_value:
         return {
             'statusCode': 400,
             'headers': {'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': 'Имя и e-mail обязательны'}, ensure_ascii=False),
+            'body': json.dumps({'error': 'Имя и контакт обязательны'}, ensure_ascii=False),
         }
 
-    webhook = os.environ['BITRIX_WEBHOOK_URL'].rstrip('/') + '/crm.lead.add.json'
+    comments = task or message
+
+    webhook = os.environ['BITRIX_WEBHOOK_URL'].rstrip('/') + '/crm.deal.add.json'
 
     fields = {
-        'TITLE': f'Заявка с сайта — {name}',
-        'NAME': name,
-        'EMAIL': [{'VALUE': email, 'VALUE_TYPE': 'WORK'}],
-        'COMMENTS': task,
+        'TITLE': f'Заявка с сайта — {name}' + (f' ({company})' if company else ''),
+        'COMMENTS': comments,
+        'UF_CRM_CONTACT_EMAIL': contact_value,
     }
     if company:
         fields['COMPANY_TITLE'] = company
@@ -50,10 +53,10 @@ def handler(event: dict, context) -> dict:
     with urllib.request.urlopen(req, timeout=10) as resp:
         result = json.loads(resp.read())
 
-    lead_id = result.get('result')
+    deal_id = result.get('result')
 
     return {
         'statusCode': 200,
         'headers': {'Access-Control-Allow-Origin': '*'},
-        'body': json.dumps({'ok': True, 'lead_id': lead_id}),
+        'body': json.dumps({'ok': True, 'deal_id': deal_id}),
     }

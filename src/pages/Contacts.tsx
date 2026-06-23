@@ -49,6 +49,7 @@ const Contacts = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [form, setForm] = useState({ name: '', company: '', contact: '', message: '' });
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 40);
@@ -61,14 +62,27 @@ const Contacts = () => {
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm(prev => ({ ...prev, [k]: e.target.value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent('Заявка с сайта: ' + (form.company || form.name));
-    const body = encodeURIComponent(
-      `Имя: ${form.name}\nКомпания: ${form.company}\nКонтакт: ${form.contact}\n\nОписание проекта:\n${form.message}`
-    );
-    window.location.href = `mailto:info@softplus.systems?subject=${subject}&body=${body}`;
-    setSent(true);
+    setSending(true);
+    try {
+      const res = await fetch('https://functions.poehali.dev/dd64cd23-6fb8-49b0-ab21-67bd404d6099', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          company: form.company,
+          contact: form.contact,
+          message: form.message,
+        }),
+      });
+      if (res.ok) {
+        setSent(true);
+        setForm({ name: '', company: '', contact: '', message: '' });
+      }
+    } finally {
+      setSending(false);
+    }
   };
 
   const inp = (placeholder: string, k: keyof typeof form, type = 'text', area = false) => {
@@ -296,9 +310,10 @@ const Contacts = () => {
                   {inp('Телефон или email *', 'contact')}
                   {inp('Опишите ваш проект или задачу', 'message', 'text', true)}
                   <div className="flex items-start gap-4 mt-2">
-                    <button type="submit"
-                      className="btn-primary inline-flex items-center gap-2 px-7 py-3.5 text-sm font-semibold flex-shrink-0">
-                      Отправить заявку <Icon name="Send" size={16} />
+                    <button type="submit" disabled={sending}
+                      className="btn-primary inline-flex items-center gap-2 px-7 py-3.5 text-sm font-semibold flex-shrink-0"
+                      style={{ opacity: sending ? 0.7 : 1 }}>
+                      {sending ? 'Отправка...' : 'Отправить заявку'} <Icon name="Send" size={16} />
                     </button>
                     <p style={{ color: C.textMut, fontSize: '0.75rem', lineHeight: 1.55 }}>
                       Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности
