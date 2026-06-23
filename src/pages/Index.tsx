@@ -127,16 +127,86 @@ const SectionHead = ({
   </div>
 );
 
-const Field = ({ label, placeholder, type = 'text' }: { label: string; placeholder: string; type?: string }) => (
+const Field = ({ label, placeholder, type = 'text', value, onChange }: {
+  label: string; placeholder: string; type?: string; value?: string; onChange?: (v: string) => void;
+}) => (
   <div className="flex flex-col gap-2">
     <label className="text-xs uppercase tracking-[0.2em]" style={{ color: C.textMut }}>{label}</label>
-    <input type={type} placeholder={placeholder}
+    <input type={type} placeholder={placeholder} value={value} onChange={e => onChange?.(e.target.value)}
       className="px-4 py-3 outline-none transition-colors"
       style={{ background: C.bg2, border: `1px solid ${C.border}`, color: C.text }}
       onFocus={e => (e.target.style.borderColor = C.brand)}
       onBlur={e  => (e.target.style.borderColor = C.border)} />
   </div>
 );
+
+const BITRIX_URL = 'https://functions.poehali.dev/dd64cd23-6fb8-49b0-ab21-67bd404d6099';
+
+const ContactForm = () => {
+  const [form, setForm] = useState({ name: '', company: '', email: '', task: '' });
+  const [status, setStatus] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
+
+  const set = (k: keyof typeof form) => (v: string) => setForm(f => ({ ...f, [k]: v }));
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('loading');
+    try {
+      const res = await fetch(BITRIX_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      if (res.ok) {
+        setStatus('ok');
+        setForm({ name: '', company: '', email: '', task: '' });
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
+  };
+
+  if (status === 'ok') {
+    return (
+      <div className="glass-card p-8 lg:p-10 flex flex-col items-center justify-center gap-4 text-center" style={{ minHeight: 320 }}>
+        <Icon name="CheckCircle2" size={48} style={{ color: C.brand } as React.CSSProperties} />
+        <h3 className="font-display font-bold text-2xl" style={{ color: C.text }}>Заявка отправлена!</h3>
+        <p style={{ color: C.textSec }}>Мы получили вашу заявку и свяжемся с вами в ближайшее время.</p>
+        <button onClick={() => setStatus('idle')} className="text-sm mt-2" style={{ color: C.brand }}>
+          Отправить ещё одну
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} className="glass-card p-8 lg:p-10 flex flex-col gap-5">
+      <div className="grid sm:grid-cols-2 gap-5">
+        <Field label="Имя" placeholder="Иван Петров" value={form.name} onChange={set('name')} />
+        <Field label="Компания" placeholder="ООО «Компания»" value={form.company} onChange={set('company')} />
+      </div>
+      <Field label="E-mail" placeholder="you@company.ru" type="email" value={form.email} onChange={set('email')} />
+      <div className="flex flex-col gap-2">
+        <label className="text-xs uppercase tracking-[0.2em]" style={{ color: C.textMut }}>Задача</label>
+        <textarea rows={4} placeholder="Опишите проект..." value={form.task}
+          onChange={e => set('task')(e.target.value)}
+          className="px-4 py-3 outline-none transition-colors resize-none"
+          style={{ background: C.bg2, border: `1px solid ${C.border}`, color: C.text }}
+          onFocus={e => (e.target.style.borderColor = C.brand)}
+          onBlur={e  => (e.target.style.borderColor = C.border)} />
+      </div>
+      {status === 'error' && (
+        <p className="text-sm" style={{ color: '#ff4d4d' }}>Не удалось отправить. Попробуйте ещё раз.</p>
+      )}
+      <button type="submit" disabled={status === 'loading'}
+        className="btn-primary inline-flex items-center justify-center gap-2 px-8 py-4 disabled:opacity-60">
+        {status === 'loading' ? 'Отправляем…' : (<>Отправить заявку <Icon name="Send" size={18} /></>)}
+      </button>
+    </form>
+  );
+};
 
 const FooterCol = ({ title, items, onClick }: { title: string; items: string[]; onClick?: (t: string) => void }) => (
   <div>
@@ -650,26 +720,7 @@ const Index = () => {
             </div>
           </div>
 
-          <form onSubmit={(e) => e.preventDefault()}
-            className="glass-card p-8 lg:p-10 flex flex-col gap-5">
-            <div className="grid sm:grid-cols-2 gap-5">
-              <Field label="Имя" placeholder="Иван Петров" />
-              <Field label="Компания" placeholder="ООО «Компания»" />
-            </div>
-            <Field label="E-mail" placeholder="you@company.ru" type="email" />
-            <div className="flex flex-col gap-2">
-              <label className="text-xs uppercase tracking-[0.2em]" style={{ color: C.textMut }}>Задача</label>
-              <textarea rows={4} placeholder="Опишите проект..."
-                className="px-4 py-3 outline-none transition-colors resize-none"
-                style={{ background: C.bg2, border: `1px solid ${C.border}`, color: C.text }}
-                onFocus={e => (e.target.style.borderColor = C.brand)}
-                onBlur={e  => (e.target.style.borderColor = C.border)} />
-            </div>
-            <button type="submit"
-              className="btn-primary inline-flex items-center justify-center gap-2 px-8 py-4">
-              Отправить заявку <Icon name="Send" size={18} />
-            </button>
-          </form>
+          <ContactForm />
         </div>
       </section>
 
