@@ -159,7 +159,6 @@ const Products = () => {
             {[
               { label: '01 — Лихие 90-е', id: 'lihie' },
               { label: '02 — GameFlow',   id: 'gameflow' },
-              { label: '03 — С+',         id: 'cplus' },
             ].map(p => (
               <button key={p.id}
                 onClick={() => document.getElementById(p.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
@@ -357,7 +356,7 @@ const Products = () => {
       </section>
 
       {/* ─── 03 С+ ─── */}
-      <section id="cplus" style={{ background: C.bg0 }} className="relative overflow-hidden">
+      <section id="cplus" style={{ background: C.bg0 }} className="relative overflow-hidden hidden">
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: `radial-gradient(ellipse 60% 40% at 80% 50%, rgba(47,128,255,0.07) 0%, transparent 70%)` }} />
         <div className="section-pad py-24 relative">
