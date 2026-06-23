@@ -67,7 +67,7 @@ const SiteFooter = () => {
           <div className="flex flex-col gap-2 text-sm" style={{ color: C.textMut }}>
             <span>info@softplus.systems</span>
             <span>+7 (495) 123-45-67</span>
-            <span>г. Москва</span>
+            <span>109390, г. Москва, ул. Юных Ленинцев, д. 25</span>
             <div className="flex gap-3 mt-3">
               {SOCIAL_ICONS.map((s) => (
                 <button key={s.label} onClick={() => setShowSocialModal(true)}

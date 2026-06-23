@@ -711,7 +711,7 @@ const Index = () => {
               {[
                 { icon: 'Mail',   t: 'info@softplus.systems', d: 'Электронная почта' },
                 { icon: 'Phone',  t: '+7 (495) 123-45-67',    d: 'Отдел развития' },
-                { icon: 'MapPin', t: 'г. Москва',             d: 'Головной офис' },
+                { icon: 'MapPin', t: '109390, г. Москва, ул. Юных Ленинцев, д. 25', d: 'Головной офис' },
               ].map((c) => (
                 <div key={c.t} className="flex items-center gap-5">
                   <div className="icon-box w-12 h-12">

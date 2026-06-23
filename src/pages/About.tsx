@@ -392,14 +392,18 @@ const About = () => {
               <p className="text-sm mb-5" style={{ color: C.textSec, lineHeight: 1.65 }}>
                 Реквизиты компании для оформления договоров и партнёрских соглашений.
               </p>
-              <button
+              <a
+                href="https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/30644761-9f48-40b4-a75d-2ff3b0abc207.pdf"
+                download="Карточка_АО_СОФТ_ПЛЮС_СИСТЕМС.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-full flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-all"
                 style={{ background: gradBrand, color: '#fff' }}
                 onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
                 onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
                 <Icon name="Download" size={16} />
                 Скачать карточку (PDF)
-              </button>
+              </a>
             </div>
           </div>
         </div>

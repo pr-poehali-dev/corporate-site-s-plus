@@ -33,9 +33,9 @@ const NAV = [
 
 const CONTACT_CARDS = [
   { icon: 'Phone',      title: 'Телефон',          value: '+7 (495) 120-35-45', sub: 'Пн–Пт с 10:00 до 19:00 по московскому времени', href: 'tel:+74951203545' },
-  { icon: 'Mail',       title: 'Email',             value: 'info@s-plus.ru',     sub: 'Ответим в течение 1–2 рабочих дней',             href: 'mailto:info@s-plus.ru' },
-  { icon: 'Briefcase',  title: 'Отдел кадров (HR)', value: 'hr@s-plus.ru',      sub: 'Вопросы о карьере и вакансиях',                  href: 'mailto:hr@s-plus.ru' },
-  { icon: 'Handshake',  title: 'Партнёрство',       value: 'partnership@s-plus.ru', sub: 'Предложения о сотрудничестве и совместных проектах', href: 'mailto:partnership@s-plus.ru' },
+  { icon: 'Mail',       title: 'Email',             value: 'info@softplus.systems',        sub: 'Ответим в течение 1–2 рабочих дней',             href: 'mailto:info@softplus.systems' },
+  { icon: 'Briefcase',  title: 'Отдел кадров (HR)', value: 'hr@softplus.systems',         sub: 'Вопросы о карьере и вакансиях',                  href: 'mailto:hr@softplus.systems' },
+  { icon: 'Handshake',  title: 'Партнёрство',       value: 'partnership@softplus.systems', sub: 'Предложения о сотрудничестве и совместных проектах', href: 'mailto:partnership@softplus.systems' },
   { icon: 'MapPin',     title: 'Адрес',             value: '109390, г. Москва, ул. Юных Ленинцев, д. 25', sub: 'Муниципальный округ Текстильщики', href: null },
 ];
 
@@ -67,7 +67,7 @@ const Contacts = () => {
     const body = encodeURIComponent(
       `Имя: ${form.name}\nКомпания: ${form.company}\nКонтакт: ${form.contact}\n\nОписание проекта:\n${form.message}`
     );
-    window.location.href = `mailto:info@s-plus.ru?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:info@softplus.systems?subject=${subject}&body=${body}`;
     setSent(true);
   };
 
@@ -332,11 +332,11 @@ const Contacts = () => {
                   </p>
                   <div className="flex items-center gap-2 mb-5" style={{ color: C.textMut, fontSize: '0.875rem' }}>
                     <Icon name="Mail" size={14} style={{ color: C.brand }} />
-                    <a href="mailto:hr@s-plus.ru" className="hover:underline transition-colors"
-                      style={{ color: C.textSec }}>hr@s-plus.ru</a>
+                    <a href="mailto:hr@softplus.systems" className="hover:underline transition-colors"
+                      style={{ color: C.textSec }}>hr@softplus.systems</a>
                   </div>
                   <div className="flex gap-3">
-                    <a href="mailto:hr@s-plus.ru?subject=Резюме"
+                    <a href="mailto:hr@softplus.systems?subject=Резюме"
                       className="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold transition-all"
                       style={{ background: gradBrand, color: '#fff' }}
                       onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
@@ -372,10 +372,10 @@ const Contacts = () => {
                   </p>
                   <div className="flex items-center gap-2 mb-5" style={{ color: C.textMut, fontSize: '0.875rem' }}>
                     <Icon name="Mail" size={14} style={{ color: C.brand }} />
-                    <a href="mailto:partnership@s-plus.ru" className="hover:underline transition-colors"
-                      style={{ color: C.textSec }}>partnership@s-plus.ru</a>
+                    <a href="mailto:partnership@softplus.systems" className="hover:underline transition-colors"
+                      style={{ color: C.textSec }}>partnership@softplus.systems</a>
                   </div>
-                  <a href="mailto:partnership@s-plus.ru?subject=Предложение о сотрудничестве"
+                  <a href="mailto:partnership@softplus.systems?subject=Предложение о сотрудничестве"
                     className="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold transition-all"
                     style={{ border: `1px solid ${C.border}`, color: C.textSec }}
                     onMouseEnter={e => { e.currentTarget.style.borderColor = C.brand; e.currentTarget.style.color = C.text; }}
@@ -384,35 +384,6 @@ const Contacts = () => {
                   </a>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── CTA ─── */}
-      <section className="py-20">
-        <div className="section-pad">
-          <div className="relative overflow-hidden p-12 md:p-16"
-            style={{ background: `linear-gradient(135deg, ${C.bg2} 0%, rgba(47,128,255,0.08) 100%)`, border: `1px solid ${C.border}` }}>
-            <div className="absolute top-0 right-0 w-96 h-96 pointer-events-none"
-              style={{ background: 'radial-gradient(circle, rgba(47,128,255,0.12) 0%, transparent 70%)' }} />
-            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-              <div className="max-w-xl">
-                <h2 className="font-display font-bold mb-3"
-                  style={{ fontSize: 'clamp(1.5rem,3vw,2.25rem)', color: C.text }}>
-                  Давайте обсудим ваш проект
-                </h2>
-                <p style={{ color: C.textSec, lineHeight: 1.75, fontSize: '1.05rem' }}>
-                  Расскажите нам о задаче — мы предложим решение на основе нашей инженерной и технологической экспертизы.
-                </p>
-              </div>
-              <a href="mailto:info@s-plus.ru?subject=Обсудить проект"
-                className="inline-flex items-center gap-2 px-8 py-4 font-semibold flex-shrink-0 transition-all"
-                style={{ background: gradBrand, color: '#fff' }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-                Связаться с нами <Icon name="ArrowRight" size={16} />
-              </a>
             </div>
           </div>
         </div>
