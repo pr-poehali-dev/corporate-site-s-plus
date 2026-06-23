@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SiteFooter from '@/components/SiteFooter';
+import useSEO from '@/hooks/useSEO';
 
 const LOGO = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png';
 
@@ -37,6 +38,11 @@ const NAV = [
 type Modal = 'gameflow' | 'cplus' | null;
 
 const Products = () => {
+  useSEO({
+    title: 'Собственные продукты АО «С+» — цифровые сервисы и игровые проекты',
+    description: 'АО «СОФТ ПЛЮС СИСТЕМС» развивает собственные цифровые продукты, игровые проекты и AI-сервисы, объединяя инженерную экспертизу и современные технологии.',
+    keywords: 'цифровые продукты, игровые проекты, собственные продукты, AI сервисы, SaaS, разработка игр, цифровые платформы',
+  });
   const [scrolled, setScrolled]   = useState(false);
   const [menuOpen, setMenuOpen]   = useState(false);
   const [modal, setModal]         = useState<Modal>(null);

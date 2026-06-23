@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Icon from '@/components/ui/icon';
 
 const LOGO = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png';
@@ -23,7 +24,14 @@ const FooterCol = ({ title, items, onClick }: { title: string; items: string[]; 
   </div>
 );
 
+const SOCIAL_ICONS: { icon: string; label: string }[] = [
+  { icon: 'Send',        label: 'Telegram' },
+  { icon: 'MessageCircle', label: 'VK' },
+  { icon: 'Smartphone',  label: 'Max' },
+];
+
 const SiteFooter = () => {
+  const [showSocialModal, setShowSocialModal] = useState(false);
   const go = (path: string) => { window.location.href = path; };
 
   const handleDirections = (t: string) => { go('/services'); };
@@ -61,13 +69,14 @@ const SiteFooter = () => {
             <span>+7 (495) 123-45-67</span>
             <span>г. Москва</span>
             <div className="flex gap-3 mt-3">
-              {(['Send', 'MessageCircle', 'Linkedin'] as const).map((ic) => (
-                <span key={ic} className="w-9 h-9 flex items-center justify-center cursor-pointer transition-colors"
+              {SOCIAL_ICONS.map((s) => (
+                <button key={s.label} onClick={() => setShowSocialModal(true)}
+                  className="w-9 h-9 flex items-center justify-center cursor-pointer transition-colors"
                   style={{ border: `1px solid ${C.borderS}`, color: C.textMut }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = C.brand; (e.currentTarget as HTMLElement).style.color = C.brand; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = C.borderS; (e.currentTarget as HTMLElement).style.color = C.textMut; }}>
-                  <Icon name={ic} size={16} />
-                </span>
+                  <Icon name={s.icon} size={16} />
+                </button>
               ))}
             </div>
           </div>
@@ -79,6 +88,32 @@ const SiteFooter = () => {
         <span>© 2026 АО «СОФТ ПЛЮС СИСТЕМС». Все права защищены.</span>
         <a href="/admin/login" className="hover:underline" style={{ color: C.textMut }}>Вход в CMS</a>
       </div>
+
+      {showSocialModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}
+          onClick={() => setShowSocialModal(false)}>
+          <div className="relative max-w-sm w-full p-8 text-center"
+            style={{ background: '#0B1220', border: '1px solid rgba(77,163,255,0.2)' }}
+            onClick={e => e.stopPropagation()}>
+            <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-5"
+              style={{ background: 'rgba(47,128,255,0.12)', border: '1px solid rgba(47,128,255,0.25)' }}>
+              <Icon name="Bell" size={22} style={{ color: C.brand } as React.CSSProperties} />
+            </div>
+            <h3 className="font-display font-bold text-lg mb-3" style={{ color: C.text }}>
+              Социальные сети
+            </h3>
+            <p className="text-sm leading-relaxed" style={{ color: C.textMut }}>
+              Социальные сети скоро будут доступны, следите за обновлениями.
+            </p>
+            <button onClick={() => setShowSocialModal(false)}
+              className="mt-6 px-6 py-2.5 text-sm font-semibold transition-all"
+              style={{ background: C.brand, color: '#fff' }}>
+              Понятно
+            </button>
+          </div>
+        </div>
+      )}
     </footer>
   );
 };

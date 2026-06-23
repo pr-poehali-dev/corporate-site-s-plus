@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SiteFooter from '@/components/SiteFooter';
+import useSEO from '@/hooks/useSEO';
 
 const LOGO = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png';
 
@@ -129,6 +130,11 @@ const DIRECTIONS = [
 ];
 
 const Services = () => {
+  useSEO({
+    title: 'Направления деятельности — разработка ПО, AI, консалтинг | АО «С+»',
+    description: 'Основные направления деятельности АО «СОФТ ПЛЮС СИСТЕМС»: разработка программного обеспечения, искусственный интеллект, цифровая трансформация, маркетинг, игровые проекты и платформа С+.',
+    keywords: 'разработка ПО, AI, автоматизация, цифровая трансформация, маркетинг, игровая разработка, консалтинг, корпоративные системы, IT услуги',
+  });
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();

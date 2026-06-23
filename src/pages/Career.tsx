@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SiteFooter from '@/components/SiteFooter';
+import useSEO from '@/hooks/useSEO';
 
 const LOGO     = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png';
 const HERO_IMG = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/54c79e7f-f61e-49e4-adaa-3b222bc20282.png';
@@ -71,6 +72,11 @@ const FAQ_ITEMS = [
 ];
 
 const Career = () => {
+  useSEO({
+    title: 'Карьера в АО «С+» — вакансии для разработчиков и IT-специалистов',
+    description: 'Присоединяйтесь к команде АО «СОФТ ПЛЮС СИСТЕМС». Разработка программного обеспечения, AI, игровые проекты, современные технологии и профессиональный рост.',
+    keywords: 'работа в IT, вакансии разработчик, карьера IT, работа программист, работа AI, DevOps, Backend, Frontend',
+  });
   const [scrolled,  setScrolled]  = useState(false);
   const [menuOpen,  setMenuOpen]  = useState(false);
   const [openFaq,   setOpenFaq]   = useState<number | null>(null);

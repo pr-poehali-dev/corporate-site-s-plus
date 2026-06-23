@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SiteFooter from '@/components/SiteFooter';
 import { api, Post } from '@/lib/api';
+import useSEO from '@/hooks/useSEO';
 
 const LOGO = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png';
 
@@ -31,6 +32,11 @@ function formatDate(s?: string) {
 }
 
 export default function Blog() {
+  useSEO({
+    title: 'Экспертиза АО «С+» — статьи об IT, AI и цифровой трансформации',
+    description: 'Экспертные статьи специалистов АО «СОФТ ПЛЮС СИСТЕМС» о разработке программного обеспечения, искусственном интеллекте, цифровой трансформации и корпоративных технологиях.',
+    keywords: 'IT блог, AI статьи, цифровая трансформация, разработка ПО, искусственный интеллект, B2B, B2G, Enterprise',
+  });
   const [posts, setPosts]       = useState<Post[]>([]);
   const [total, setTotal]       = useState(0);
   const [page, setPage]         = useState(1);

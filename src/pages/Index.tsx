@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { api, Post } from '@/lib/api';
 import SiteFooter from '@/components/SiteFooter';
+import useSEO from '@/hooks/useSEO';
 
 /* Максимальная ширина контейнера для 2K/4K — контент центрируется */
 const WRAP = { maxWidth: 1680, margin: '0 auto', width: '100%' };
@@ -223,6 +224,11 @@ const FooterCol = ({ title, items, onClick }: { title: string; items: string[]; 
 /* ───────── page ───────── */
 
 const Index = () => {
+  useSEO({
+    title: 'АО «С+» (АО «СОФТ ПЛЮС СИСТЕМС») — разработка ПО, искусственный интеллект и цифровая трансформация',
+    description: 'АО «СОФТ ПЛЮС СИСТЕМС» — российская IT-компания полного цикла. Разрабатываем программное обеспечение, внедряем AI, сопровождаем цифровую трансформацию и создаем собственные продукты.',
+    keywords: 'АО С+, АО СОФТ ПЛЮС СИСТЕМС, разработка ПО, заказная разработка, разработка программного обеспечения, искусственный интеллект, AI, автоматизация, цифровая трансформация, IT-компания, системный интегратор, разработка корпоративных систем',
+  });
   const [scrolled,  setScrolled]  = useState(false);
   const [menuOpen,  setMenuOpen]  = useState(false);
   const [latestPosts, setLatestPosts] = useState<Post[]>([]);

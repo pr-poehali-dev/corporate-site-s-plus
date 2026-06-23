@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SiteFooter from '@/components/SiteFooter';
+import useSEO from '@/hooks/useSEO';
 
 const LOGO = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png';
 
@@ -111,6 +112,11 @@ const FRANCHISE = [
 ];
 
 const Lihie90 = () => {
+  useSEO({
+    title: 'Лихие 90-е — игровой проект АО «С+»',
+    description: '«Лихие 90-е» — собственный игровой проект АО «СОФТ ПЛЮС СИСТЕМС». Легендарная игра возвращается на современные мобильные платформы с новой графикой и современными технологиями.',
+    keywords: 'Лихие 90-е, игра Лихие 90-е, мобильная игра, игровой проект, GameDev, разработка игр, App Store, Google Play, RuStore',
+  });
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
