@@ -66,7 +66,7 @@ const SiteFooter = () => {
           <div className="font-display font-semibold mb-4" style={{ color: C.text }}>Контакты</div>
           <div className="flex flex-col gap-2 text-sm" style={{ color: C.textMut }}>
             <span>info@softplus.systems</span>
-            <span>+7 (495) 123-45-67</span>
+            <span>+7 (495) 108-71-81</span>
             <span>109390, г. Москва, ул. Юных Ленинцев, д. 25</span>
             <div className="flex gap-3 mt-3">
               {SOCIAL_ICONS.map((s) => (

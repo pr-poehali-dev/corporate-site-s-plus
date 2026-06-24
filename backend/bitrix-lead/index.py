@@ -1,10 +1,12 @@
 import json
 import os
-import urllib.request
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 
 def handler(event: dict, context) -> dict:
-    """Создаёт сделку в Битрикс24 CRM (crm.deal.add) из формы заявки на сайте."""
+    """Отправляет заявку с сайта на почту info@softplus.systems через SMTP."""
 
     if event.get('httpMethod') == 'OPTIONS':
         return {
@@ -34,29 +36,35 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'error': 'Имя и контакт обязательны'}, ensure_ascii=False),
         }
 
-    comments = task or message
+    lines = [
+        f'Имя: {name}',
+        f'Компания: {company}' if company else None,
+        f'Контакт: {contact_value}',
+    ]
+    if task or message:
+        lines += ['', 'Сообщение:', task or message]
 
-    webhook = os.environ['BITRIX_WEBHOOK_URL'].rstrip('/') + '/crm.deal.add.json'
+    text_body = '\n'.join(l for l in lines if l is not None)
+    subject   = f'Заявка с сайта — {name}' + (f' ({company})' if company else '')
 
-    fields = {
-        'TITLE': f'Заявка с сайта — {name}' + (f' ({company})' if company else ''),
-        'COMMENTS': comments,
-        'UF_CRM_CONTACT_EMAIL': contact_value,
-    }
-    if company:
-        fields['COMPANY_TITLE'] = company
+    to_addr   = 'info@softplus.systems'
+    smtp_user = os.environ['SMTP_USER']
+    smtp_pass = os.environ['SMTP_PASS']
+    smtp_host = os.environ.get('SMTP_HOST', 'smtp.yandex.ru')
+    smtp_port = int(os.environ.get('SMTP_PORT', '465'))
 
-    payload = json.dumps({'fields': fields}).encode('utf-8')
-    req = urllib.request.Request(webhook, data=payload, method='POST')
-    req.add_header('Content-Type', 'application/json')
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = subject
+    msg['From']    = smtp_user
+    msg['To']      = to_addr
+    msg.attach(MIMEText(text_body, 'plain', 'utf-8'))
 
-    with urllib.request.urlopen(req, timeout=10) as resp:
-        result = json.loads(resp.read())
-
-    deal_id = result.get('result')
+    with smtplib.SMTP_SSL(smtp_host, smtp_port) as s:
+        s.login(smtp_user, smtp_pass)
+        s.sendmail(smtp_user, [to_addr], msg.as_string())
 
     return {
         'statusCode': 200,
         'headers': {'Access-Control-Allow-Origin': '*'},
-        'body': json.dumps({'ok': True, 'deal_id': deal_id}),
+        'body': json.dumps({'ok': True}, ensure_ascii=False),
     }

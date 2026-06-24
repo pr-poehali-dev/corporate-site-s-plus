@@ -32,7 +32,7 @@ const NAV = [
 ];
 
 const CONTACT_CARDS = [
-  { icon: 'Phone',      title: 'Телефон',          value: '+7 (495) 120-35-45', sub: 'Пн–Пт с 10:00 до 19:00 по московскому времени', href: 'tel:+74951203545' },
+  { icon: 'Phone',      title: 'Телефон',          value: '+7 (495) 108-71-81', sub: 'Пн–Пт с 10:00 до 19:00 по московскому времени', href: 'tel:+74951087181' },
   { icon: 'Mail',       title: 'Email',             value: 'info@softplus.systems',        sub: 'Ответим в течение 1–2 рабочих дней',             href: 'mailto:info@softplus.systems' },
   { icon: 'Briefcase',  title: 'Отдел кадров (HR)', value: 'hr@softplus.systems',         sub: 'Вопросы о карьере и вакансиях',                  href: 'mailto:hr@softplus.systems' },
   { icon: 'Handshake',  title: 'Партнёрство',       value: 'partnership@softplus.systems', sub: 'Предложения о сотрудничестве и совместных проектах', href: 'mailto:partnership@softplus.systems' },

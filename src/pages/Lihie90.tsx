@@ -243,14 +243,18 @@ const Lihie90 = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <button onClick={goContacts}
+              <a
+                href="https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/abeaae54-9016-4116-9fd5-35ada79295ee.pdf"
+                download="Презентация_Лихие_90-е.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-7 py-3.5 text-sm font-semibold transition-all"
                 style={{ background: gradGold, color: '#0A0705' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.88'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}>
                 <Icon name="Download" size={16} />
                 Скачать презентацию
-              </button>
+              </a>
               <button onClick={goContacts}
                 className="inline-flex items-center gap-2 px-7 py-3.5 text-sm font-semibold transition-all"
                 style={{ border: `1px solid rgba(232,160,32,0.5)`, color: C.gold, background: 'transparent' }}
@@ -556,14 +560,18 @@ const Lihie90 = () => {
             <p className="text-base leading-relaxed mb-10" style={{ color: C.textSec }}>
               Подробная информация о проекте, концепции игры, текущем этапе разработки, технологической архитектуре и стратегии развития представлена в презентации.
             </p>
-            <button onClick={goContacts}
+            <a
+              href="https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/abeaae54-9016-4116-9fd5-35ada79295ee.pdf"
+              download="Презентация_Лихие_90-е.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-8 py-4 text-sm font-semibold transition-all"
               style={{ background: gradGold, color: '#0A0705' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.88'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}>
               <Icon name="Download" size={16} />
               Скачать презентацию (PDF)
-            </button>
+            </a>
           </div>
         </div>
       </section>
