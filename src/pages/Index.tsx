@@ -240,7 +240,7 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    api.getPosts({ per: 3 }).then(r => setLatestPosts(r.posts)).catch(() => {});
+    api.getPosts({ per: 2 }).then(r => setLatestPosts(r.posts)).catch(() => {});
   }, []);
 
   const scrollTo = (id: string) => {
