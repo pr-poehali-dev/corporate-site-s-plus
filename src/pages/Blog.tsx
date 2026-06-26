@@ -53,7 +53,7 @@ export default function Blog() {
     return () => window.removeEventListener('scroll', fn);
   }, []);
 
-  const PER = 9;
+  const PER = 12;
 
   useEffect(() => {
     setLoading(true);
@@ -232,23 +232,48 @@ export default function Blog() {
         )}
 
         {/* pagination */}
-        {total > PER && (
-          <div className="flex items-center justify-center gap-3 mt-12">
-            <button disabled={page === 1} onClick={() => setPage(p => p - 1)}
-              className="px-5 py-2.5 text-sm transition-colors disabled:opacity-30"
-              style={{ border: `1px solid ${C.border}`, color: C.textSec }}>
-              ← Назад
-            </button>
-            <span className="text-sm" style={{ color: C.textMut }}>
-              {page} / {Math.ceil(total / PER)}
-            </span>
-            <button disabled={page >= Math.ceil(total / PER)} onClick={() => setPage(p => p + 1)}
-              className="px-5 py-2.5 text-sm transition-colors disabled:opacity-30"
-              style={{ border: `1px solid ${C.border}`, color: C.textSec }}>
-              Вперёд →
-            </button>
-          </div>
-        )}
+        {total > PER && (() => {
+          const pageCount = Math.ceil(total / PER);
+          const pages: (number | '...')[] = [];
+          if (pageCount <= 7) {
+            for (let i = 1; i <= pageCount; i++) pages.push(i);
+          } else {
+            pages.push(1);
+            if (page > 3) pages.push('...');
+            for (let i = Math.max(2, page - 1); i <= Math.min(pageCount - 1, page + 1); i++) pages.push(i);
+            if (page < pageCount - 2) pages.push('...');
+            pages.push(pageCount);
+          }
+          return (
+            <div className="flex items-center justify-center gap-2 mt-12">
+              <button disabled={page === 1} onClick={() => setPage(p => p - 1)}
+                className="px-4 py-2.5 text-sm transition-colors disabled:opacity-30"
+                style={{ border: `1px solid ${C.border}`, color: C.textSec }}>
+                ←
+              </button>
+              {pages.map((p, i) =>
+                p === '...' ? (
+                  <span key={`dots-${i}`} className="px-2 text-sm" style={{ color: C.textMut }}>…</span>
+                ) : (
+                  <button key={p} onClick={() => setPage(p)}
+                    className="w-10 h-10 text-sm transition-colors"
+                    style={{
+                      border: `1px solid ${page === p ? C.brand : C.border}`,
+                      background: page === p ? 'rgba(47,128,255,0.15)' : 'transparent',
+                      color: page === p ? C.brand : C.textSec,
+                    }}>
+                    {p}
+                  </button>
+                )
+              )}
+              <button disabled={page >= pageCount} onClick={() => setPage(p => p + 1)}
+                className="px-4 py-2.5 text-sm transition-colors disabled:opacity-30"
+                style={{ border: `1px solid ${C.border}`, color: C.textSec }}>
+                →
+              </button>
+            </div>
+          );
+        })()}
       </main>
 
       <div className="section-pad" style={{ background: C.bg0 }}>

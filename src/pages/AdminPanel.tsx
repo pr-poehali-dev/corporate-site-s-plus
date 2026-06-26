@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { api, Post } from '@/lib/api';
@@ -19,11 +19,33 @@ const empty: Partial<Post> = {
 
 function TagInput({ label, value, onChange }: { label: string; value: string[]; onChange: (v: string[]) => void }) {
   const [inp, setInp] = useState('');
-  const add = () => {
-    const v = inp.trim();
-    if (v && !value.includes(v)) onChange([...value, v]);
+
+  const addMany = (raw: string, current: string[]) => {
+    const parts = raw.split(/[,،،]+/).map(s => s.trim()).filter(Boolean);
+    if (!parts.length) return current;
+    const next = [...current];
+    for (const p of parts) {
+      if (!next.includes(p)) next.push(p);
+    }
+    return next;
+  };
+
+  const add = (text = inp) => {
+    const next = addMany(text, value);
+    if (next.length !== value.length) onChange(next);
     setInp('');
   };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pasted = e.clipboardData.getData('text');
+    if (pasted.includes(',')) {
+      e.preventDefault();
+      const next = addMany(pasted, value);
+      onChange(next);
+      setInp('');
+    }
+  };
+
   return (
     <div className="flex flex-col gap-2">
       <label className="text-xs uppercase tracking-[0.2em]" style={{ color: C.textMut }}>{label}</label>
@@ -38,10 +60,11 @@ function TagInput({ label, value, onChange }: { label: string; value: string[]; 
         ))}
         <input value={inp} onChange={e => setInp(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(); } }}
+          onPaste={handlePaste}
           placeholder="Введите и нажмите Enter"
           className="flex-1 min-w-[120px] outline-none bg-transparent text-sm"
           style={{ color: C.text }}
-          onBlur={add} />
+          onBlur={() => add()} />
       </div>
     </div>
   );
@@ -59,6 +82,131 @@ function Inp({ label, value, onChange, type = 'text', placeholder = '' }: {
         style={{ background: C.bg2, border: `1px solid ${C.border}`, color: C.text }}
         onFocus={e => (e.target.style.borderColor = C.brand)}
         onBlur={e  => (e.target.style.borderColor = C.border)} />
+    </div>
+  );
+}
+
+const SITE_PAGES = [
+  { label: 'Главная', path: '/' },
+  { label: 'Продукты', path: '/products' },
+  { label: 'Лихие 90-е', path: '/products/lihie-90e' },
+  { label: 'О компании', path: '/about' },
+  { label: 'Блог', path: '/blog' },
+  { label: 'Карьера', path: '/career' },
+  { label: 'Контакты', path: '/contacts' },
+];
+
+function ContentEditor({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const taRef = useRef<HTMLTextAreaElement>(null);
+  const [showLinkPicker, setShowLinkPicker] = useState(false);
+  const [linkText, setLinkText] = useState('');
+  const [linkUrl, setLinkUrl] = useState('');
+
+  const insertLink = useCallback(() => {
+    const ta = taRef.current;
+    if (!ta) return;
+    const text = linkText || linkUrl;
+    const insertion = `[${text}](${linkUrl})`;
+    const start = ta.selectionStart;
+    const end   = ta.selectionEnd;
+    const next  = value.slice(0, start) + insertion + value.slice(end);
+    onChange(next);
+    setShowLinkPicker(false);
+    setLinkText('');
+    setLinkUrl('');
+    setTimeout(() => {
+      ta.focus();
+      ta.setSelectionRange(start + insertion.length, start + insertion.length);
+    }, 0);
+  }, [linkText, linkUrl, value, onChange]);
+
+  const openLinkPicker = () => {
+    const ta = taRef.current;
+    if (ta) {
+      const sel = value.slice(ta.selectionStart, ta.selectionEnd).trim();
+      if (sel) setLinkText(sel);
+    }
+    setShowLinkPicker(true);
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <label className="text-xs uppercase tracking-[0.2em]" style={{ color: C.textMut }}>Текст статьи *</label>
+
+      {/* toolbar */}
+      <div className="flex items-center gap-2 px-3 py-2" style={{ background: C.bg2, border: `1px solid ${C.border}`, borderBottom: 'none' }}>
+        <button type="button" onClick={openLinkPicker}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors"
+          style={{ border: `1px solid ${C.border}`, color: C.textSec, background: 'transparent' }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = C.brand; e.currentTarget.style.color = C.brand; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textSec; }}>
+          <Icon name="Link" size={13} /> Вставить ссылку
+        </button>
+        <span className="text-xs" style={{ color: C.textMut }}>Формат: [текст](/путь)</span>
+      </div>
+
+      {/* link picker */}
+      {showLinkPicker && (
+        <div className="p-4 flex flex-col gap-3" style={{ background: C.bg1, border: `1px solid ${C.brand}`, borderTop: 'none' }}>
+          <div className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: C.brand }}>Вставка ссылки</div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs" style={{ color: C.textMut }}>Текст ссылки</label>
+              <input value={linkText} onChange={e => setLinkText(e.target.value)}
+                placeholder="Читать подробнее..."
+                className="px-3 py-2 text-sm outline-none"
+                style={{ background: C.bg2, border: `1px solid ${C.border}`, color: C.text }} />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs" style={{ color: C.textMut }}>URL или страница сайта</label>
+              <input value={linkUrl} onChange={e => setLinkUrl(e.target.value)}
+                placeholder="https://... или /contacts"
+                className="px-3 py-2 text-sm outline-none"
+                style={{ background: C.bg2, border: `1px solid ${C.border}`, color: C.text }} />
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span className="text-xs self-center" style={{ color: C.textMut }}>Страницы сайта:</span>
+            {SITE_PAGES.map(p => (
+              <button key={p.path} type="button" onClick={() => setLinkUrl(p.path)}
+                className="px-2 py-1 text-xs transition-colors"
+                style={{
+                  border: `1px solid ${linkUrl === p.path ? C.brand : C.border}`,
+                  color: linkUrl === p.path ? C.brand : C.textMut,
+                  background: linkUrl === p.path ? 'rgba(47,128,255,0.1)' : 'transparent',
+                }}>
+                {p.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={insertLink} disabled={!linkUrl}
+              className="px-4 py-2 text-sm font-semibold transition-all disabled:opacity-40"
+              style={{ background: `linear-gradient(135deg,${C.brand},${C.tech})`, color: '#fff' }}>
+              Вставить
+            </button>
+            <button type="button" onClick={() => { setShowLinkPicker(false); setLinkText(''); setLinkUrl(''); }}
+              className="px-4 py-2 text-sm transition-colors"
+              style={{ border: `1px solid ${C.border}`, color: C.textMut }}>
+              Отмена
+            </button>
+          </div>
+        </div>
+      )}
+
+      <textarea ref={taRef} value={value} onChange={e => onChange(e.target.value)}
+        placeholder="Основной текст статьи..." rows={18}
+        className="px-4 py-3 outline-none transition-colors resize-y font-mono text-sm"
+        style={{
+          background: C.bg2,
+          border: `1px solid ${C.border}`,
+          borderTop: showLinkPicker ? 'none' : `1px solid ${C.border}`,
+          color: C.text,
+          minHeight: 400,
+        }}
+        onFocus={e => (e.target.style.borderColor = C.brand)}
+        onBlur={e  => (e.target.style.borderColor = C.border)} />
+      <p className="text-xs" style={{ color: C.textMut }}>Поддерживается обычный текст с переносами строк. Ссылки в формате [текст](url)</p>
     </div>
   );
 }
@@ -305,16 +453,10 @@ export default function AdminPanel() {
                     onBlur={e  => (e.target.style.borderColor = C.border)} />
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs uppercase tracking-[0.2em]" style={{ color: C.textMut }}>Текст статьи *</label>
-                  <textarea value={form.content || ''} onChange={e => set('content')(e.target.value)}
-                    placeholder="Основной текст статьи..." rows={18}
-                    className="px-4 py-3 outline-none transition-colors resize-y font-mono text-sm"
-                    style={{ background: C.bg2, border: `1px solid ${C.border}`, color: C.text, minHeight: 400 }}
-                    onFocus={e => (e.target.style.borderColor = C.brand)}
-                    onBlur={e  => (e.target.style.borderColor = C.border)} />
-                  <p className="text-xs" style={{ color: C.textMut }}>Поддерживается обычный текст с переносами строк</p>
-                </div>
+                <ContentEditor
+                  value={form.content || ''}
+                  onChange={v => set('content')(v)}
+                />
               </div>
 
               {/* sidebar */}
