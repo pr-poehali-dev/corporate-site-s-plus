@@ -143,14 +143,20 @@ const Field = ({ label, placeholder, type = 'text', value, onChange }: {
 
 const BITRIX_URL = 'https://functions.poehali.dev/dd64cd23-6fb8-49b0-ab21-67bd404d6099';
 
+const POLICY_URL = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/feb9a8c3-794f-437c-a0fd-2dda3f1c0c39.pdf';
+
 const ContactForm = () => {
   const [form, setForm] = useState({ name: '', company: '', email: '', task: '' });
   const [status, setStatus] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
+  const [agreed, setAgreed] = useState(true);
+  const [agreeError, setAgreeError] = useState(false);
 
   const set = (k: keyof typeof form) => (v: string) => setForm(f => ({ ...f, [k]: v }));
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreed) { setAgreeError(true); return; }
+    setAgreeError(false);
     setStatus('loading');
     try {
       const res = await fetch(BITRIX_URL, {
@@ -198,6 +204,26 @@ const ContactForm = () => {
           onFocus={e => (e.target.style.borderColor = C.brand)}
           onBlur={e  => (e.target.style.borderColor = C.border)} />
       </div>
+      <label className="flex items-start gap-3 cursor-pointer select-none">
+        <div className="relative flex-shrink-0 mt-0.5">
+          <input type="checkbox" className="sr-only" checked={agreed} onChange={e => { setAgreed(e.target.checked); if (e.target.checked) setAgreeError(false); }} />
+          <div className="w-4 h-4 flex items-center justify-center transition-colors"
+            style={{ border: `1.5px solid ${agreeError ? '#ff4d4d' : agreed ? C.brand : C.border}`, background: agreed ? C.brand : 'transparent' }}>
+            {agreed && <Icon name="Check" size={10} style={{ color: '#fff' } as React.CSSProperties} />}
+          </div>
+        </div>
+        <span className="text-xs leading-relaxed" style={{ color: agreeError ? '#ff4d4d' : C.textMut }}>
+          Я согласен / согласна с условиями{' '}
+          <a href={POLICY_URL} target="_blank" rel="noopener noreferrer"
+            className="underline transition-colors"
+            style={{ color: agreeError ? '#ff4d4d' : C.brand }}>
+            обработки персональных данных
+          </a>
+        </span>
+      </label>
+      {agreeError && (
+        <p className="text-xs" style={{ color: '#ff4d4d' }}>Необходимо согласиться с условиями обработки персональных данных для отправки формы.</p>
+      )}
       {status === 'error' && (
         <p className="text-sm" style={{ color: '#ff4d4d' }}>Не удалось отправить. Попробуйте ещё раз.</p>
       )}

@@ -273,6 +273,135 @@
     border: none;
     padding: 0;
   }
+
+  /* CMS — превью редактора статей */
+  .md-preview {
+    color: #b6c2d1;
+    line-height: 1.8;
+    font-size: 0.9375rem;
+  }
+  .md-preview h1 {
+    font-family: "Oswald", sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #e6edf7;
+    margin: 0 0 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  .md-preview h2 {
+    font-family: "Oswald", sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #e6edf7;
+    margin: 2rem 0 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .md-preview h3 {
+    font-family: "Oswald", sans-serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #e6edf7;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .md-preview p {
+    margin-bottom: 1rem;
+  }
+  .md-preview strong {
+    color: #e6edf7;
+    font-weight: 600;
+  }
+  .md-preview em {
+    color: #b6c2d1;
+    font-style: italic;
+  }
+  .md-preview u {
+    text-decoration: underline;
+  }
+  .md-preview s {
+    text-decoration: line-through;
+    color: #7a8aa0;
+  }
+  .md-preview a {
+    color: #2f80ff;
+    text-decoration: underline;
+  }
+  .md-preview a:hover {
+    color: #4da3ff;
+  }
+  .md-preview ul,
+  .md-preview ol {
+    margin: 0.75rem 0 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .md-preview li::marker {
+    color: #2f80ff;
+  }
+  .md-preview blockquote {
+    border-left: 3px solid #2f80ff;
+    padding-left: 1.25rem;
+    margin: 1.25rem 0;
+    color: #7a8aa0;
+    font-style: italic;
+    background: rgba(47, 128, 255, 0.04);
+  }
+  .md-preview code {
+    background: rgba(47, 128, 255, 0.1);
+    border: 1px solid rgba(47, 128, 255, 0.2);
+    padding: 0.15em 0.4em;
+    font-size: 0.85em;
+    color: #00c2ff;
+    font-family: monospace;
+  }
+  .md-preview pre {
+    background: #070a0f;
+    border: 1px solid rgba(77, 163, 255, 0.15);
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    margin: 1.25rem 0;
+  }
+  .md-preview pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #00c2ff;
+  }
+  .md-preview hr {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 1.75rem 0;
+  }
+  .md-preview img {
+    max-width: 100%;
+    height: auto;
+    margin: 1rem 0;
+    border: 1px solid rgba(77, 163, 255, 0.15);
+  }
+  .md-preview table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.875rem;
+  }
+  .md-preview th {
+    background: rgba(47, 128, 255, 0.1);
+    color: #e6edf7;
+    font-weight: 600;
+    padding: 0.6rem 0.875rem;
+    text-align: left;
+    border: 1px solid rgba(77, 163, 255, 0.18);
+  }
+  .md-preview td {
+    padding: 0.55rem 0.875rem;
+    border: 1px solid rgba(77, 163, 255, 0.1);
+    color: #b6c2d1;
+  }
+  .md-preview tr:nth-child(even) td {
+    background: rgba(255, 255, 255, 0.02);
+  }
 }
 
 @layer utilities {

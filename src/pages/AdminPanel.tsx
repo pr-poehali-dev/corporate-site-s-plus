@@ -96,117 +96,328 @@ const SITE_PAGES = [
   { label: 'Контакты', path: '/contacts' },
 ];
 
+function mdToHtml(md: string): string {
+  let s = md;
+  // headings
+  s = s.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  s = s.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  s = s.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+  // hr
+  s = s.replace(/^---+$/gm, '<hr/>');
+  // blockquote
+  s = s.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+  // code block
+  s = s.replace(/```[\w]*\n([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+  // inline code
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // bold + italic
+  s = s.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+  s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  // underline ++ strikethrough ~~
+  s = s.replace(/\+\+(.+?)\+\+/g, '<u>$1</u>');
+  s = s.replace(/~~(.+?)~~/g, '<s>$1</s>');
+  // links
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+  // images
+  s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1"/>');
+  // center
+  s = s.replace(/^->(.*?)<-$/gm, '<div style="text-align:center">$1</div>');
+  // markdown tables
+  s = s.replace(/(\|.+\|\n\|[-| :]+\|\n(?:\|.+\|\n?)*)/g, (tbl) => {
+    const rows = tbl.trim().split('\n');
+    const head = rows[0].split('|').filter(Boolean).map(c => `<th>${c.trim()}</th>`).join('');
+    const body = rows.slice(2).map(r =>
+      '<tr>' + r.split('|').filter(Boolean).map(c => `<td>${c.trim()}</td>`).join('') + '</tr>'
+    ).join('');
+    return `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+  });
+  // unordered list
+  s = s.replace(/(^[-*] .+$\n?)+/gm, (block) => {
+    const items = block.trim().split('\n').map(l => `<li>${l.replace(/^[-*] /, '').trim()}</li>`).join('');
+    return `<ul>${items}</ul>`;
+  });
+  // ordered list
+  s = s.replace(/(^\d+\. .+$\n?)+/gm, (block) => {
+    const items = block.trim().split('\n').map(l => `<li>${l.replace(/^\d+\. /, '').trim()}</li>`).join('');
+    return `<ol>${items}</ol>`;
+  });
+  // paragraphs: wrap plain lines
+  s = s.replace(/^(?!<[a-z/]).+$/gm, (line) => line ? `<p>${line}</p>` : '');
+  return s;
+}
+
+type ToolBtn = { icon: string; title: string; action: () => void; active?: boolean };
+
+function TBtn({ icon, title, action, active }: ToolBtn) {
+  return (
+    <button type="button" title={title} onClick={action}
+      className="w-8 h-8 flex items-center justify-center transition-colors flex-shrink-0"
+      style={{ background: active ? 'rgba(47,128,255,0.18)' : 'transparent', color: active ? C.brand : C.textSec, border: 'none' }}
+      onMouseEnter={e => { if (!active) { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = C.text; } }}
+      onMouseLeave={e => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = C.textSec; } }}>
+      <Icon name={icon} size={15} />
+    </button>
+  );
+}
+
+function Divider() {
+  return <div className="w-px h-5 flex-shrink-0" style={{ background: C.border }} />;
+}
+
 function ContentEditor({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const taRef = useRef<HTMLTextAreaElement>(null);
-  const [showLinkPicker, setShowLinkPicker] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [tab, setTab] = useState<'edit' | 'preview'>('edit');
+  const [showLink, setShowLink] = useState(false);
+  const [showTable, setShowTable] = useState(false);
   const [linkText, setLinkText] = useState('');
   const [linkUrl, setLinkUrl] = useState('');
+  const [tableRows, setTableRows] = useState('3');
+  const [tableCols, setTableCols] = useState('3');
 
-  const insertLink = useCallback(() => {
+  const wrap = useCallback((before: string, after = before, placeholder = '') => {
     const ta = taRef.current;
     if (!ta) return;
-    const text = linkText || linkUrl;
-    const insertion = `[${text}](${linkUrl})`;
-    const start = ta.selectionStart;
-    const end   = ta.selectionEnd;
-    const next  = value.slice(0, start) + insertion + value.slice(end);
+    const s = ta.selectionStart, e = ta.selectionEnd;
+    const sel = value.slice(s, e) || placeholder;
+    const next = value.slice(0, s) + before + sel + after + value.slice(e);
     onChange(next);
-    setShowLinkPicker(false);
-    setLinkText('');
-    setLinkUrl('');
     setTimeout(() => {
       ta.focus();
-      ta.setSelectionRange(start + insertion.length, start + insertion.length);
+      const ns = s + before.length;
+      ta.setSelectionRange(ns, ns + sel.length);
     }, 0);
-  }, [linkText, linkUrl, value, onChange]);
+  }, [value, onChange]);
 
-  const openLinkPicker = () => {
+  const insertAt = useCallback((text: string) => {
     const ta = taRef.current;
-    if (ta) {
-      const sel = value.slice(ta.selectionStart, ta.selectionEnd).trim();
-      if (sel) setLinkText(sel);
+    if (!ta) return;
+    const s = ta.selectionStart;
+    const next = value.slice(0, s) + text + value.slice(s);
+    onChange(next);
+    setTimeout(() => { ta.focus(); ta.setSelectionRange(s + text.length, s + text.length); }, 0);
+  }, [value, onChange]);
+
+  const prefixLines = useCallback((prefix: string) => {
+    const ta = taRef.current;
+    if (!ta) return;
+    const s = ta.selectionStart, e = ta.selectionEnd;
+    const lines = value.slice(s, e || value.length).split('\n').map(l => prefix + l).join('\n');
+    const next = value.slice(0, s) + lines + value.slice(e || value.length);
+    onChange(next);
+    setTimeout(() => { ta.focus(); }, 0);
+  }, [value, onChange]);
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const text = e.clipboardData.getData('text');
+    if (/^#+ |^\*\*|^\* |\[.+\]\(|^> |^---/.test(text)) {
+      e.preventDefault();
+      insertAt(text);
     }
-    setShowLinkPicker(true);
+  };
+
+  const insertTable = () => {
+    const r = parseInt(tableRows) || 3;
+    const c = parseInt(tableCols) || 3;
+    const header = '| ' + Array(c).fill('Заголовок').map((h, i) => `${h} ${i + 1}`).join(' | ') + ' |';
+    const sep = '| ' + Array(c).fill('---').join(' | ') + ' |';
+    const rows = Array(r).fill(null).map(() => '| ' + Array(c).fill('Ячейка').join(' | ') + ' |').join('\n');
+    insertAt('\n' + header + '\n' + sep + '\n' + rows + '\n');
+    setShowTable(false);
+  };
+
+  const insertLink = () => {
+    const text = linkText || 'ссылка';
+    insertAt(`[${text}](${linkUrl})`);
+    setShowLink(false); setLinkText(''); setLinkUrl('');
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const b64 = await new Promise<string>((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res((r.result as string).split(',')[1]);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+    try {
+      const { url } = await import('@/lib/api').then(m => m.api.uploadImage(b64, file.type));
+      insertAt(`![${file.name}](${url})`);
+    } catch { /* ignore */ }
+    e.target.value = '';
+  };
+
+  const toolGroups: ToolBtn[][] = [
+    [
+      { icon: 'Heading1', title: 'H1', action: () => prefixLines('# ') },
+      { icon: 'Heading2', title: 'H2', action: () => prefixLines('## ') },
+      { icon: 'Heading3', title: 'H3', action: () => prefixLines('### ') },
+    ],
+    [
+      { icon: 'Bold',          title: 'Жирный (Ctrl+B)',     action: () => wrap('**', '**', 'жирный текст') },
+      { icon: 'Italic',        title: 'Курсив (Ctrl+I)',     action: () => wrap('*', '*', 'курсив') },
+      { icon: 'Underline',     title: 'Подчёркнутый',       action: () => wrap('++', '++', 'подчёркнутый') },
+      { icon: 'Strikethrough', title: 'Зачёркнутый',        action: () => wrap('~~', '~~', 'зачёркнутый') },
+    ],
+    [
+      { icon: 'AlignCenter',   title: 'По центру',          action: () => wrap('->', '<-', 'текст по центру') },
+    ],
+    [
+      { icon: 'List',          title: 'Маркированный список', action: () => prefixLines('- ') },
+      { icon: 'ListOrdered',   title: 'Нумерованный список', action: () => prefixLines('1. ') },
+      { icon: 'Quote',         title: 'Цитата',             action: () => prefixLines('> ') },
+    ],
+    [
+      { icon: 'Code',          title: 'Код',                action: () => wrap('`', '`', 'код') },
+      { icon: 'SquareCode',    title: 'Блок кода',          action: () => insertAt('\n```\nкод здесь\n```\n') },
+      { icon: 'SeparatorHorizontal', title: 'Разделитель',  action: () => insertAt('\n---\n') },
+    ],
+    [
+      { icon: 'Link',          title: 'Ссылка',             action: () => { const ta = taRef.current; if (ta) { const sel = value.slice(ta.selectionStart, ta.selectionEnd).trim(); if (sel) setLinkText(sel); } setShowLink(v => !v); setShowTable(false); } },
+      { icon: 'Table2',        title: 'Таблица',            action: () => { setShowTable(v => !v); setShowLink(false); } },
+      { icon: 'ImagePlus',     title: 'Изображение',        action: () => fileRef.current?.click() },
+    ],
+    [
+      { icon: 'RemoveFormatting', title: 'Очистить форматирование', action: () => {
+        const ta = taRef.current;
+        if (!ta) return;
+        const s = ta.selectionStart, e = ta.selectionEnd;
+        const sel = value.slice(s, e);
+        const clean = sel.replace(/[*_~`#>|+\-]/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'); // eslint-disable-line no-useless-escape
+        const next = value.slice(0, s) + clean + value.slice(e);
+        onChange(next);
+      }},
+    ],
+  ];
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.ctrlKey || e.metaKey) {
+      if (e.key === 'b') { e.preventDefault(); wrap('**', '**', 'жирный текст'); }
+      if (e.key === 'i') { e.preventDefault(); wrap('*', '*', 'курсив'); }
+    }
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <label className="text-xs uppercase tracking-[0.2em]" style={{ color: C.textMut }}>Текст статьи *</label>
+    <div className="flex flex-col gap-0">
+      <label className="text-xs uppercase tracking-[0.2em] mb-2" style={{ color: C.textMut }}>Текст статьи *</label>
 
-      {/* toolbar */}
-      <div className="flex items-center gap-2 px-3 py-2" style={{ background: C.bg2, border: `1px solid ${C.border}`, borderBottom: 'none' }}>
-        <button type="button" onClick={openLinkPicker}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors"
-          style={{ border: `1px solid ${C.border}`, color: C.textSec, background: 'transparent' }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = C.brand; e.currentTarget.style.color = C.brand; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textSec; }}>
-          <Icon name="Link" size={13} /> Вставить ссылку
-        </button>
-        <span className="text-xs" style={{ color: C.textMut }}>Формат: [текст](/путь)</span>
+      {/* tabs */}
+      <div className="flex items-center justify-between px-3"
+        style={{ background: C.bg1, border: `1px solid ${C.border}`, borderBottom: 'none' }}>
+        <div className="flex">
+          {(['edit', 'preview'] as const).map(t => (
+            <button key={t} type="button" onClick={() => setTab(t)}
+              className="px-4 py-2.5 text-xs font-semibold transition-colors"
+              style={{
+                color: tab === t ? C.brand : C.textMut,
+                borderBottom: tab === t ? `2px solid ${C.brand}` : '2px solid transparent',
+              }}>
+              {t === 'edit' ? 'Редактор' : 'Превью'}
+            </button>
+          ))}
+        </div>
+        <span className="text-xs" style={{ color: C.textMut }}>{value.length} симв.</span>
       </div>
 
-      {/* link picker */}
-      {showLinkPicker && (
-        <div className="p-4 flex flex-col gap-3" style={{ background: C.bg1, border: `1px solid ${C.brand}`, borderTop: 'none' }}>
-          <div className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: C.brand }}>Вставка ссылки</div>
+      {/* toolbar */}
+      {tab === 'edit' && (
+        <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5"
+          style={{ background: C.bg2, border: `1px solid ${C.border}`, borderTop: 'none', borderBottom: 'none' }}>
+          {toolGroups.map((group, gi) => (
+            <div key={gi} className="flex items-center gap-0.5">
+              {gi > 0 && <Divider />}
+              {group.map(btn => <TBtn key={btn.title} {...btn} />)}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* link panel */}
+      {tab === 'edit' && showLink && (
+        <div className="p-4 flex flex-col gap-3" style={{ background: C.bg1, border: `1px solid ${C.brand}`, borderTop: 'none', borderBottom: 'none' }}>
+          <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: C.brand }}>Вставка ссылки</div>
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
-              <label className="text-xs" style={{ color: C.textMut }}>Текст ссылки</label>
-              <input value={linkText} onChange={e => setLinkText(e.target.value)}
-                placeholder="Читать подробнее..."
-                className="px-3 py-2 text-sm outline-none"
-                style={{ background: C.bg2, border: `1px solid ${C.border}`, color: C.text }} />
+              <span className="text-xs" style={{ color: C.textMut }}>Текст</span>
+              <input value={linkText} onChange={e => setLinkText(e.target.value)} placeholder="Текст ссылки"
+                className="px-3 py-2 text-sm outline-none" style={{ background: C.bg2, border: `1px solid ${C.border}`, color: C.text }} />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs" style={{ color: C.textMut }}>URL или страница сайта</label>
-              <input value={linkUrl} onChange={e => setLinkUrl(e.target.value)}
-                placeholder="https://... или /contacts"
-                className="px-3 py-2 text-sm outline-none"
-                style={{ background: C.bg2, border: `1px solid ${C.border}`, color: C.text }} />
+              <span className="text-xs" style={{ color: C.textMut }}>URL</span>
+              <input value={linkUrl} onChange={e => setLinkUrl(e.target.value)} placeholder="https://... или /путь"
+                className="px-3 py-2 text-sm outline-none" style={{ background: C.bg2, border: `1px solid ${C.border}`, color: C.text }} />
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <span className="text-xs self-center" style={{ color: C.textMut }}>Страницы сайта:</span>
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-xs" style={{ color: C.textMut }}>Страницы:</span>
             {SITE_PAGES.map(p => (
               <button key={p.path} type="button" onClick={() => setLinkUrl(p.path)}
                 className="px-2 py-1 text-xs transition-colors"
-                style={{
-                  border: `1px solid ${linkUrl === p.path ? C.brand : C.border}`,
-                  color: linkUrl === p.path ? C.brand : C.textMut,
-                  background: linkUrl === p.path ? 'rgba(47,128,255,0.1)' : 'transparent',
-                }}>
+                style={{ border: `1px solid ${linkUrl === p.path ? C.brand : C.border}`, color: linkUrl === p.path ? C.brand : C.textMut, background: linkUrl === p.path ? 'rgba(47,128,255,0.1)' : 'transparent' }}>
                 {p.label}
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex gap-2">
             <button type="button" onClick={insertLink} disabled={!linkUrl}
-              className="px-4 py-2 text-sm font-semibold transition-all disabled:opacity-40"
-              style={{ background: `linear-gradient(135deg,${C.brand},${C.tech})`, color: '#fff' }}>
-              Вставить
-            </button>
-            <button type="button" onClick={() => { setShowLinkPicker(false); setLinkText(''); setLinkUrl(''); }}
-              className="px-4 py-2 text-sm transition-colors"
-              style={{ border: `1px solid ${C.border}`, color: C.textMut }}>
-              Отмена
-            </button>
+              className="px-4 py-2 text-sm font-semibold disabled:opacity-40"
+              style={{ background: `linear-gradient(135deg,${C.brand},${C.tech})`, color: '#fff' }}>Вставить</button>
+            <button type="button" onClick={() => { setShowLink(false); setLinkText(''); setLinkUrl(''); }}
+              className="px-4 py-2 text-sm" style={{ border: `1px solid ${C.border}`, color: C.textMut }}>Отмена</button>
           </div>
         </div>
       )}
 
-      <textarea ref={taRef} value={value} onChange={e => onChange(e.target.value)}
-        placeholder="Основной текст статьи..." rows={18}
-        className="px-4 py-3 outline-none transition-colors resize-y font-mono text-sm"
-        style={{
-          background: C.bg2,
-          border: `1px solid ${C.border}`,
-          borderTop: showLinkPicker ? 'none' : `1px solid ${C.border}`,
-          color: C.text,
-          minHeight: 400,
-        }}
-        onFocus={e => (e.target.style.borderColor = C.brand)}
-        onBlur={e  => (e.target.style.borderColor = C.border)} />
-      <p className="text-xs" style={{ color: C.textMut }}>Поддерживается обычный текст с переносами строк. Ссылки в формате [текст](url)</p>
+      {/* table panel */}
+      {tab === 'edit' && showTable && (
+        <div className="p-4 flex flex-col gap-3" style={{ background: C.bg1, border: `1px solid ${C.brand}`, borderTop: 'none', borderBottom: 'none' }}>
+          <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: C.brand }}>Вставка таблицы</div>
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col gap-1">
+              <span className="text-xs" style={{ color: C.textMut }}>Строк</span>
+              <input type="number" min="1" max="20" value={tableRows} onChange={e => setTableRows(e.target.value)}
+                className="w-20 px-3 py-2 text-sm outline-none" style={{ background: C.bg2, border: `1px solid ${C.border}`, color: C.text }} />
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs" style={{ color: C.textMut }}>Колонок</span>
+              <input type="number" min="1" max="10" value={tableCols} onChange={e => setTableCols(e.target.value)}
+                className="w-20 px-3 py-2 text-sm outline-none" style={{ background: C.bg2, border: `1px solid ${C.border}`, color: C.text }} />
+            </div>
+            <button type="button" onClick={insertTable}
+              className="px-4 py-2 text-sm font-semibold self-end"
+              style={{ background: `linear-gradient(135deg,${C.brand},${C.tech})`, color: '#fff' }}>Вставить</button>
+            <button type="button" onClick={() => setShowTable(false)}
+              className="px-4 py-2 text-sm self-end" style={{ border: `1px solid ${C.border}`, color: C.textMut }}>Отмена</button>
+          </div>
+        </div>
+      )}
+
+      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+
+      {tab === 'edit' ? (
+        <textarea ref={taRef} value={value} onChange={e => onChange(e.target.value)}
+          onKeyDown={handleKeyDown} onPaste={handlePaste}
+          placeholder={`# Заголовок статьи\n\nНачните писать или вставьте текст с Markdown-разметкой...\n\n**Жирный**, *курсив*, [ссылка](/contacts)\n\n- Пункт 1\n- Пункт 2`}
+          rows={22}
+          className="px-4 py-4 outline-none resize-y font-mono text-sm leading-relaxed"
+          style={{ background: C.bg2, border: `1px solid ${C.border}`, borderTop: (showLink || showTable) ? 'none' : `1px solid ${C.border}`, color: C.text, minHeight: 450 }}
+          onFocus={e => (e.target.style.borderColor = C.brand)}
+          onBlur={e  => (e.target.style.borderColor = C.border)} />
+      ) : (
+        <div className="md-preview px-6 py-6 overflow-auto"
+          style={{ background: C.bg2, border: `1px solid ${C.border}`, minHeight: 450 }}
+          dangerouslySetInnerHTML={{ __html: mdToHtml(value) || '<p style="color:#7A8AA0;font-style:italic">Пусто — начните писать в режиме редактора</p>' }} />
+      )}
+
+      <style>{`
+        .md-preview h1,.md-preview h2,.md-preview h3{font-family:inherit}
+      `}</style>
+
+      <p className="text-xs mt-1" style={{ color: C.textMut }}>
+        Поддерживается Markdown: **жирный**, *курсив*, # Заголовки, - списки, [ссылка](url), {'`'}код{'`'}, {'>'} цитата, --- разделитель, -{'>'} центр {'<-'}
+      </p>
     </div>
   );
 }

@@ -86,7 +86,19 @@ const SiteFooter = () => {
       <div className="mt-12 pt-8 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2"
         style={{ borderTop: `1px solid ${C.borderS}`, color: C.textMut }}>
         <span>© 2026 АО «СОФТ ПЛЮС СИСТЕМС». Все права защищены.</span>
-        <a href="/admin/login" className="hover:underline" style={{ color: C.textMut }}>Вход в CMS</a>
+        <div className="flex items-center gap-4">
+          <a
+            href="https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/feb9a8c3-794f-437c-a0fd-2dda3f1c0c39.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline transition-colors"
+            style={{ color: C.textMut }}
+            onMouseEnter={e => (e.currentTarget.style.color = C.brand)}
+            onMouseLeave={e => (e.currentTarget.style.color = C.textMut)}>
+            Политика обработки персональных данных
+          </a>
+          <a href="/admin/login" className="hover:underline" style={{ color: C.textMut }}>Вход в CMS</a>
+        </div>
       </div>
 
       {showSocialModal && (

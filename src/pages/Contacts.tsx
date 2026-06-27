@@ -47,9 +47,12 @@ const Contacts = () => {
   });
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const POLICY_URL = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/feb9a8c3-794f-437c-a0fd-2dda3f1c0c39.pdf';
   const [form, setForm] = useState({ name: '', company: '', contact: '', message: '' });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const [agreed, setAgreed] = useState(true);
+  const [agreeError, setAgreeError] = useState(false);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 40);
@@ -64,6 +67,8 @@ const Contacts = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreed) { setAgreeError(true); return; }
+    setAgreeError(false);
     setSending(true);
     try {
       const res = await fetch('https://functions.poehali.dev/dd64cd23-6fb8-49b0-ab21-67bd404d6099', {
@@ -309,15 +314,32 @@ const Contacts = () => {
                   </div>
                   {inp('Телефон или email *', 'contact')}
                   {inp('Опишите ваш проект или задачу', 'message', 'text', true)}
+                  <label className="flex items-start gap-3 cursor-pointer select-none mt-1">
+                    <div className="relative flex-shrink-0 mt-0.5">
+                      <input type="checkbox" className="sr-only" checked={agreed} onChange={e => { setAgreed(e.target.checked); if (e.target.checked) setAgreeError(false); }} />
+                      <div className="w-4 h-4 flex items-center justify-center transition-colors"
+                        style={{ border: `1.5px solid ${agreeError ? '#ff4d4d' : agreed ? C.brand : C.border}`, background: agreed ? C.brand : 'transparent' }}>
+                        {agreed && <Icon name="Check" size={10} style={{ color: '#fff' }} />}
+                      </div>
+                    </div>
+                    <span className="text-xs leading-relaxed" style={{ color: agreeError ? '#ff4d4d' : C.textMut }}>
+                      Я согласен / согласна с условиями{' '}
+                      <a href={POLICY_URL} target="_blank" rel="noopener noreferrer"
+                        className="underline transition-colors"
+                        style={{ color: agreeError ? '#ff4d4d' : C.brand }}>
+                        обработки персональных данных
+                      </a>
+                    </span>
+                  </label>
+                  {agreeError && (
+                    <p style={{ color: '#ff4d4d', fontSize: '0.75rem' }}>Необходимо согласиться с условиями обработки персональных данных для отправки формы.</p>
+                  )}
                   <div className="flex items-start gap-4 mt-2">
                     <button type="submit" disabled={sending}
                       className="btn-primary inline-flex items-center gap-2 px-7 py-3.5 text-sm font-semibold flex-shrink-0"
                       style={{ opacity: sending ? 0.7 : 1 }}>
                       {sending ? 'Отправка...' : 'Отправить заявку'} <Icon name="Send" size={16} />
                     </button>
-                    <p style={{ color: C.textMut, fontSize: '0.75rem', lineHeight: 1.55 }}>
-                      Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности
-                    </p>
                   </div>
                   <p style={{ color: C.textMut, fontSize: '0.8rem', lineHeight: 1.55 }}>
                     Мы свяжемся с вами в течение 1–2 рабочих дней и предложим оптимальный формат сотрудничества.
