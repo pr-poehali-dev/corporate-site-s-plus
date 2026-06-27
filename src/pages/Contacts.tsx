@@ -101,7 +101,7 @@ const Contacts = () => {
       onBlur:  (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => (e.target.style.borderColor = C.border),
     };
     return area
-      ? <textarea {...shared} rows={4} style={{ ...shared.style, resize: 'none' }} />
+      ? <textarea {...shared} rows={8} style={{ ...shared.style, resize: 'none' }} />
       : <input type={type} {...shared} />;
   };
 
@@ -341,9 +341,6 @@ const Contacts = () => {
                       {sending ? 'Отправка...' : 'Отправить заявку'} <Icon name="Send" size={16} />
                     </button>
                   </div>
-                  <p style={{ color: C.textMut, fontSize: '0.8rem', lineHeight: 1.55 }}>
-                    Мы свяжемся с вами в течение 1–2 рабочих дней и предложим оптимальный формат сотрудничества.
-                  </p>
                 </form>
               )}
             </div>

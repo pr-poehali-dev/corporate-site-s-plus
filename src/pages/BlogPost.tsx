@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { api, Post } from '@/lib/api';
+import { mdToHtml } from '@/lib/mdToHtml';
 
 const LOGO = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png';
 
@@ -119,7 +120,7 @@ export default function BlogPost() {
 
             {/* content */}
             <div className="prose-blog" style={{ color: C.textSec }}
-              dangerouslySetInnerHTML={{ __html: post.content?.replace(/\n/g, '<br/>') || '' }} />
+              dangerouslySetInnerHTML={{ __html: mdToHtml(post.content || '') }} />
 
             {/* keywords */}
             {post.keywords && post.keywords.length > 0 && (
