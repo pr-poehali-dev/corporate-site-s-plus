@@ -7,7 +7,7 @@ import useSEO from '@/hooks/useSEO';
 const LOGO     = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png';
 const HERO_IMG = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/54c79e7f-f61e-49e4-adaa-3b222bc20282.png';
 
-const HH_URL = 'https://hh.ru/employer/11487460';
+const HH_URL = 'https://hh.ru/employer/12872065';
 const HR_EMAIL = 'hr@softplus.systems';
 
 const C = {
