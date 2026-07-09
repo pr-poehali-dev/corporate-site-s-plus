@@ -10,7 +10,7 @@ const C = {
   borderS: 'rgba(255,255,255,0.05)',
 };
 
-const DIRECTIONS = ['Разработка ПО', 'AI и автоматизация', 'Игровые проекты', 'Консалтинг', 'Маркетинг', 'Платформа С+'];
+const DIRECTIONS = ['Разработка ПО', 'AI и автоматизация', 'Игровые проекты', 'Консалтинг', 'Маркетинг'];
 
 const FooterCol = ({ title, items, onClick }: { title: string; items: string[]; onClick?: (t: string) => void }) => (
   <div>

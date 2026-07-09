@@ -91,7 +91,7 @@ const Career = () => {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  const goContacts = () => navigate('/contacts');
+  const goDiscuss = () => navigate('/#contacts');
 
   return (
     <div style={{ background: C.bg0, color: C.text, minHeight: '100vh', overflowX: 'hidden' }}>
@@ -133,7 +133,7 @@ const Career = () => {
           </nav>
 
           <div className="flex items-center gap-3">
-            <button onClick={goContacts}
+            <button onClick={goDiscuss}
               className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-all"
               style={{ border: `1px solid ${C.brand}`, color: C.brand, background: 'transparent' }}
               onMouseEnter={e => { const t = e.currentTarget; t.style.background = C.brand; t.style.color = '#fff'; }}

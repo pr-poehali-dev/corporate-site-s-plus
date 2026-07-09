@@ -38,6 +38,7 @@ const DIRECTIONS = [
     num: '01',
     icon: 'Code2',
     title: 'Разработка программного обеспечения',
+    short: 'Разработка ПО',
     desc: `Проектируем и создаем корпоративные информационные системы, веб-платформы, мобильные приложения и специализированное программное обеспечение под задачи бизнеса и государственных организаций.\n\nРазработка ведется с учетом масштабируемости, информационной безопасности и возможности дальнейшего развития продукта.`,
     services: [
       'Корпоративные порталы',
@@ -147,7 +148,7 @@ const Services = () => {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  const goContacts = () => navigate('/contacts');
+  const goDiscuss = () => navigate('/#contacts');
 
   return (
     <div style={{ background: C.bg0, color: C.text, minHeight: '100vh', overflowX: 'hidden' }}>
@@ -189,7 +190,7 @@ const Services = () => {
           </nav>
 
           <div className="flex items-center gap-3">
-            <button onClick={goContacts}
+            <button onClick={goDiscuss}
               className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-all"
               style={{ border: `1px solid ${C.brand}`, color: C.brand, background: 'transparent' }}
               onMouseEnter={e => { const t = e.currentTarget; t.style.background = C.brand; t.style.color = '#fff'; }}
@@ -249,7 +250,7 @@ const Services = () => {
                 style={{ border: `1px solid ${C.border}`, color: C.textSec, background: 'transparent' }}
                 onMouseEnter={e => { const t = e.currentTarget; t.style.borderColor = d.accent; t.style.color = d.accent; }}
                 onMouseLeave={e => { const t = e.currentTarget; t.style.borderColor = C.border; t.style.color = C.textSec; }}>
-                {d.num} — {d.title.split(' ').slice(0, 2).join(' ')}
+                {d.num} — {d.short ?? d.title.split(' ').slice(0, 2).join(' ')}
               </button>
             ))}
           </div>
@@ -356,7 +357,7 @@ const Services = () => {
             Многие проекты требуют комплексного подхода и объединяют сразу несколько направлений нашей экспертизы. Расскажите о своей задаче — мы предложим оптимальное решение.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button onClick={() => navigate('/contacts')}
+            <button onClick={goDiscuss}
               className="px-8 py-3.5 text-sm font-semibold transition-all"
               style={{ background: gradBrand, color: '#fff' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.9'; }}

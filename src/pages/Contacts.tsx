@@ -145,7 +145,7 @@ const Contacts = () => {
           </nav>
 
           <div className="flex items-center gap-3">
-            <Link to="/contacts"
+            <Link to="/#contacts"
               className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-all"
               style={{ border: `1px solid ${C.brand}`, color: C.brand, background: 'transparent' }}
               onMouseEnter={e => { const t = e.currentTarget; t.style.background = C.brand; t.style.color = '#fff'; }}

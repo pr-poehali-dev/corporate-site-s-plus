@@ -66,6 +66,7 @@ const Products = () => {
   }, [modal]);
 
   const goContacts = () => navigate('/contacts');
+  const goDiscuss = () => navigate('/#contacts');
 
   return (
     <div style={{ background: C.bg0, color: C.text, minHeight: '100vh', overflowX: 'hidden' }}>
@@ -107,7 +108,7 @@ const Products = () => {
           </nav>
 
           <div className="flex items-center gap-3">
-            <button onClick={goContacts}
+            <button onClick={goDiscuss}
               className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-all"
               style={{ border: `1px solid ${C.brand}`, color: C.brand, background: 'transparent' }}
               onMouseEnter={e => { const t = e.currentTarget; t.style.background = C.brand; t.style.color = '#fff'; }}
@@ -481,7 +482,7 @@ const Products = () => {
             Мы не только разрабатываем программное обеспечение на заказ, но и создаем собственные цифровые продукты, развивая внутреннюю экспертизу и формируя новые технологические решения для бизнеса, государства и конечных пользователей.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button onClick={goContacts}
+            <button onClick={goDiscuss}
               className="px-8 py-3.5 text-sm font-semibold transition-all"
               style={{ background: gradBrand, color: '#fff' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.9'; }}

@@ -45,6 +45,7 @@ export default function Blog() {
   const [loading, setLoading]   = useState(true);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [allCats, setAllCats]   = useState<string[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,6 +55,14 @@ export default function Blog() {
   }, []);
 
   const PER = 12;
+
+  // Полный список категорий грузим один раз, независимо от текущего фильтра —
+  // чтобы кнопки фильтров не пропадали при выборе одной из категорий
+  useEffect(() => {
+    api.getPosts({ per: 1000 })
+      .then(r => setAllCats(Array.from(new Set(r.posts.map(p => p.category).filter(Boolean))) as string[]))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -66,7 +75,7 @@ export default function Blog() {
       .finally(() => setLoading(false));
   }, [page, category, tag]);
 
-  const cats = Array.from(new Set(posts.map(p => p.category).filter(Boolean)));
+  const cats = allCats;
 
   return (
     <div style={{ background: C.bg0, minHeight: '100vh', color: C.text }}>
@@ -106,7 +115,7 @@ export default function Blog() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/contacts')}
+            <button onClick={() => navigate('/#contacts')}
               className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-all"
               style={{ border: `1px solid ${C.brand}`, color: C.brand, background: 'transparent' }}
               onMouseEnter={e => { const t = e.currentTarget; t.style.background = C.brand; t.style.color = '#fff'; }}

@@ -130,6 +130,7 @@ const Lihie90 = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
   const goContacts = () => navigate('/contacts');
+  const goDiscuss = () => navigate('/#contacts');
 
   return (
     <div style={{ background: C.bg0, color: C.text, minHeight: '100vh', overflowX: 'hidden' }}>
@@ -171,7 +172,7 @@ const Lihie90 = () => {
           </nav>
 
           <div className="flex items-center gap-3">
-            <button onClick={goContacts}
+            <button onClick={goDiscuss}
               className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-all"
               style={{ border: `1px solid ${C.gold}`, color: C.gold, background: 'transparent' }}
               onMouseEnter={e => { const t = e.currentTarget; t.style.background = C.gold; t.style.color = '#0A0705'; }}
@@ -601,7 +602,7 @@ const Lihie90 = () => {
               style={{ background: gradGold, color: '#0A0705' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.88'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}>
-              Подписаться на новости
+              Новости проекта
             </button>
             <button onClick={goContacts}
               className="px-8 py-3.5 text-sm font-semibold transition-all"
