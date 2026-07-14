@@ -3,6 +3,13 @@ import { Link, useParams } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { api, Post } from '@/lib/api';
 import { mdToHtml } from '@/lib/mdToHtml';
+import useSEO, { SITE_URL } from '@/hooks/useSEO';
+
+const DEFAULT_OG_IMAGE = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/files/og-image-1782221586814.png';
+
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+}
 
 const LOGO = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png';
 
@@ -23,6 +30,36 @@ export default function BlogPost() {
   const [post, setPost]   = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState('');
+
+  const seoTitle = post ? `${post.title} — Блог АО «С+»` : 'Загрузка статьи — Блог АО «С+»';
+  const seoDesc = post?.excerpt || (post?.content ? stripHtml(mdToHtml(post.content)).slice(0, 160) : 'Экспертные статьи АО «СОФТ ПЛЮС СИСТЕМС» об IT, AI и цифровой трансформации.');
+  const seoImage = post?.cover_url || DEFAULT_OG_IMAGE;
+
+  useSEO({
+    title: seoTitle,
+    description: seoDesc,
+    keywords: post?.keywords?.join(', ') || post?.tags?.join(', '),
+    image: seoImage,
+    type: 'article',
+    publishedTime: post?.published_at,
+    modifiedTime: post?.updated_at,
+    jsonLd: post ? {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: post.title,
+      description: seoDesc,
+      image: seoImage,
+      datePublished: post.published_at,
+      dateModified: post.updated_at || post.published_at,
+      author: { '@type': 'Organization', name: 'АО «СОФТ ПЛЮС СИСТЕМС»' },
+      publisher: {
+        '@type': 'Organization',
+        name: 'АО «СОФТ ПЛЮС СИСТЕМС»',
+        logo: { '@type': 'ImageObject', url: 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png' },
+      },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/blog/${post.slug}` },
+    } : undefined,
+  });
 
   useEffect(() => {
     if (!slug) return;

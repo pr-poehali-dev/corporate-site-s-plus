@@ -8,6 +8,13 @@
       "bodyMatcher": "partial"
     },
     {
+      "name": "GET sitemap.xml",
+      "method": "GET",
+      "path": "/?_path=/sitemap.xml",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    },
+    {
       "name": "POST login — неверный пароль",
       "method": "POST",
       "path": "/?_path=/auth/login",

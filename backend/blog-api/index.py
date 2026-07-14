@@ -4,6 +4,7 @@ API блога АО «СОФТ ПЛЮС СИСТЕМС».
   POST /auth/login          — вход в админку
   GET  /posts               — список опубликованных статей (публичный)
   GET  /posts/{slug}        — одна статья (публичный)
+  GET  /sitemap.xml         — карта сайта (публичный, всегда актуальные статьи)
   GET  /admin/posts         — все статьи (требует токен)
   POST /admin/posts         — создать статью
   PUT  /admin/posts/{id}    — обновить статью
@@ -45,6 +46,12 @@ def ok(data, status=200):
 def err(msg, status=400):
     return {"statusCode": status, "headers": {**CORS, "Content-Type": "application/json"},
             "body": json.dumps({"error": msg}, ensure_ascii=False)}
+
+
+def xml_response(body, status=200):
+    return {"statusCode": status,
+            "headers": {**CORS, "Content-Type": "application/xml; charset=utf-8"},
+            "body": body}
 
 
 def get_db():
@@ -101,6 +108,55 @@ def handler(event: dict, context) -> dict:
     path = path.rstrip("/") or "/"
 
     try:
+        # ── PUBLIC: sitemap.xml — динамически из БД, всегда актуальный ──
+        if path == "/sitemap.xml" and method == "GET":
+            site_url = "https://softplus.systems"
+            today = time.strftime("%Y-%m-%d")
+
+            static_pages = [
+                ("/", "1.0", "weekly"),
+                ("/services", "0.8", "monthly"),
+                ("/products", "0.8", "monthly"),
+                ("/lihie90", "0.7", "monthly"),
+                ("/about", "0.6", "monthly"),
+                ("/career", "0.6", "monthly"),
+                ("/contacts", "0.6", "monthly"),
+                ("/blog", "0.9", "daily"),
+            ]
+
+            conn, cur = get_db()
+            cur.execute(
+                f"""SELECT slug, published_at FROM {T('posts')}
+                    WHERE is_published=TRUE ORDER BY published_at DESC"""
+            )
+            posts = cur.fetchall()
+            conn.close()
+
+            entries = []
+            for p, priority, freq in static_pages:
+                entries.append(
+                    f"  <url>\n    <loc>{site_url}{p}</loc>\n"
+                    f"    <lastmod>{today}</lastmod>\n"
+                    f"    <changefreq>{freq}</changefreq>\n"
+                    f"    <priority>{priority}</priority>\n  </url>"
+                )
+            for slug, published_at in posts:
+                lastmod = published_at.strftime("%Y-%m-%d") if published_at else today
+                entries.append(
+                    f"  <url>\n    <loc>{site_url}/blog/{slug}</loc>\n"
+                    f"    <lastmod>{lastmod}</lastmod>\n"
+                    f"    <changefreq>monthly</changefreq>\n"
+                    f"    <priority>0.7</priority>\n  </url>"
+                )
+
+            xml = (
+                '<?xml version="1.0" encoding="UTF-8"?>\n'
+                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+                + "\n".join(entries) +
+                "\n</urlset>\n"
+            )
+            return xml_response(xml)
+
         # ── AUTH ──────────────────────────────────────────────────
         if path == "/auth/login" and method == "POST":
             body = parse_body(event)

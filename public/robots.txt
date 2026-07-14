@@ -12,3 +12,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://functions.poehali.dev/dd31f286-4b2a-49dc-a63f-7bbd58a99a3f/?_path=/sitemap.xml
