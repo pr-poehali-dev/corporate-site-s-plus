@@ -73,11 +73,20 @@ const useSEO = ({ title, description, keywords, image, url, type = 'website', js
     const canonicalUrl = url || (SITE_URL + window.location.pathname);
     setCanonical(canonicalUrl);
 
+    setMetaByProperty('og:site_name', 'АО «СОФТ ПЛЮС СИСТЕМС»');
     setMetaByProperty('og:title', title);
     setMetaByProperty('og:description', description);
     setMetaByProperty('og:type', type);
     setMetaByProperty('og:url', canonicalUrl);
-    if (image) setMetaByProperty('og:image', image);
+    if (image) {
+      setMetaByProperty('og:image', image);
+      // Реальные размеры картинки известны только для дефолтного og-изображения,
+      // заданного в index.html — для остальных (например, обложек статей блога)
+      // явно неизвестны, поэтому убираем теги width/height, чтобы соцсети не
+      // получали неверные пропорции и не отклоняли превью.
+      removeMetaByProperty('og:image:width');
+      removeMetaByProperty('og:image:height');
+    }
 
     setMetaByName('twitter:card', image ? 'summary_large_image' : 'summary');
     setMetaByName('twitter:title', title);
