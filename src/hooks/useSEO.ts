@@ -37,6 +37,10 @@ const setMetaByProperty = (property: string, content: string) => {
   el.content = content;
 };
 
+const removeMetaByProperty = (property: string) => {
+  document.querySelector(`meta[property="${property}"]`)?.remove();
+};
+
 const setCanonical = (href: string) => {
   let el = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
   if (!el) {
@@ -81,7 +85,9 @@ const useSEO = ({ title, description, keywords, image, url, type = 'website', js
     if (image) setMetaByName('twitter:image', image);
 
     if (type === 'article' && publishedTime) setMetaByProperty('article:published_time', publishedTime);
+    else removeMetaByProperty('article:published_time');
     if (type === 'article' && modifiedTime) setMetaByProperty('article:modified_time', modifiedTime);
+    else removeMetaByProperty('article:modified_time');
 
     setJsonLd(jsonLd);
     // eslint-disable-next-line react-hooks/exhaustive-deps
