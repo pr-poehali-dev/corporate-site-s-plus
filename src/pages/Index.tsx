@@ -419,8 +419,7 @@ const Index = () => {
               style={{ fontSize: 'var(--fs-h1)', animationDelay: '0.1s' }}>
               <span className="block text-gradient">Создаём технологии,</span>
               <span className="block" style={{ color: C.text }}>которые меняют бизнес</span>
-              <span className="block" style={{ color: C.text }}>и</span>
-              <span className="block" style={{ color: C.text }}>госуправление,</span>
+              <span className="block" style={{ color: C.text }}>и госуправление,</span>
               <span className="block" style={{ color: C.textSec }}>формируя будущее</span>
             </h1>
 
