@@ -418,9 +418,9 @@ const Index = () => {
             <h1 className="font-display font-bold leading-[1.02] mb-8 animate-fade-up"
               style={{ fontSize: 'var(--fs-h1)', animationDelay: '0.1s' }}>
               <span className="block text-gradient">Создаём технологии,</span>
-              <span className="block" style={{ color: C.text }}>которые меняют бизнес,</span>
-              <span className="block" style={{ color: C.text }}>государство</span>
-              <span className="block" style={{ color: C.textSec }}>и строят будущее</span>
+              <span className="block" style={{ color: C.text }}>которые меняют бизнес и</span>
+              <span className="block" style={{ color: C.text }}>госуправление,</span>
+              <span className="block" style={{ color: C.textSec }}>формируя будущее</span>
             </h1>
 
             <p className="text-lg mb-10 max-w-xl animate-fade-up"
