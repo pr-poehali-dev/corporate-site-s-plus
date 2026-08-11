@@ -13,6 +13,7 @@ import BlogPost from "./pages/BlogPost";
 import Services from "./pages/Services";
 import Products from "./pages/Products";
 import Lihie90 from "./pages/Lihie90";
+import SoftwareDevelopment from "./pages/SoftwareDevelopment";
 import AdminLogin from "./pages/AdminLogin";
 import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
@@ -29,6 +30,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/services/software-development" element={<SoftwareDevelopment />} />
           <Route path="/products" element={<Products />} />
           <Route path="/lihie90" element={<Lihie90 />} />
           <Route path="/about" element={<About />} />

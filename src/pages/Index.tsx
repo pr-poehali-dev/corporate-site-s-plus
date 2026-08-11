@@ -24,7 +24,7 @@ const NAV = [
 
 const HERO_TAGS = [
   { title: 'AI и автоматизация',     left: '55%', top: '8%'  },
-  { title: 'Разработка ПО',          left: '72%', top: '22%' },
+  { title: 'Разработка ПО',          left: '72%', top: '22%', href: '/services/software-development' },
   { title: 'Маркетинг tech-компаний',left: '58%', top: '42%' },
   { title: 'Консалтинг',             left: '80%', top: '58%' },
   { title: 'Игровые проекты',        left: '60%', top: '74%' },
@@ -32,12 +32,12 @@ const HERO_TAGS = [
 ];
 
 const SERVICES = [
-  { icon: 'Code2',        title: 'Разработка ПО',        desc: 'Корпоративные системы, веб-платформы, мобильные приложения и сложные интеграции.' },
-  { icon: 'BrainCircuit', title: 'AI и автоматизация',   desc: 'Внедряем искусственный интеллект, автоматизируем процессы и создаём умные сервисы.' },
-  { icon: 'Gamepad2',     title: 'Игровые проекты',      desc: 'Создаём игры и игровые миры. Флагманский проект — «Лихие 90-е».' },
-  { icon: 'LineChart',    title: 'Консалтинг',           desc: 'Цифровая стратегия, IT-архитектура, проектирование и оптимизация процессов.' },
-  { icon: 'Megaphone',    title: 'Маркетинг',            desc: 'Продвижение технологических продуктов и компаний на B2B и B2C рынках.' },
-  { icon: 'Layers',       title: 'Платформа С+',         desc: 'Технологическая платформа для создания масштабируемых цифровых решений.' },
+  { icon: 'Code2',        title: 'Разработка ПО',        desc: 'Корпоративные системы, веб-платформы, мобильные приложения и сложные интеграции.', href: '/services/software-development' },
+  { icon: 'BrainCircuit', title: 'AI и автоматизация',   desc: 'Внедряем искусственный интеллект, автоматизируем процессы и создаём умные сервисы.', href: '/services#ai' },
+  { icon: 'Gamepad2',     title: 'Игровые проекты',      desc: 'Создаём игры и игровые миры. Флагманский проект — «Лихие 90-е».', href: '/services#games' },
+  { icon: 'LineChart',    title: 'Консалтинг',           desc: 'Цифровая стратегия, IT-архитектура, проектирование и оптимизация процессов.', href: '/services#consulting' },
+  { icon: 'Megaphone',    title: 'Маркетинг',            desc: 'Продвижение технологических продуктов и компаний на B2B и B2C рынках.', href: '/services#marketing' },
+  { icon: 'Layers',       title: 'Платформа С+',         desc: 'Технологическая платформа для создания масштабируемых цифровых решений.', href: '/services' },
 ];
 
 const WHY = [
@@ -382,25 +382,37 @@ const Index = () => {
         {/* плавающие теги — только десктоп, строго внутри WRAP */}
         <div className="absolute inset-0 hidden xl:flex pointer-events-none" style={{ justifyContent: 'center' }}>
           <div className="relative w-full" style={{ maxWidth: 1680, padding: '0 clamp(1.25rem,4vw,6rem)' }}>
-            {HERO_TAGS.map((t, i) => (
-              <div key={t.title}
-                className="absolute animate-fade-up animate-float text-sm font-medium"
-                style={{
-                  top: t.top,
-                  left: t.left,
-                  animationDelay: `${0.6 + i * 0.13}s`,
-                  background: 'rgba(11,18,32,0.88)',
-                  backdropFilter: 'blur(16px)',
-                  border: `1px solid ${C.border}`,
-                  padding: '10px 16px',
-                  whiteSpace: 'nowrap',
-                } as React.CSSProperties}>
+            {HERO_TAGS.map((t, i) => {
+              const tagStyle = {
+                top: t.top,
+                left: t.left,
+                animationDelay: `${0.6 + i * 0.13}s`,
+                background: 'rgba(11,18,32,0.88)',
+                backdropFilter: 'blur(16px)',
+                border: `1px solid ${C.border}`,
+                padding: '10px 16px',
+                whiteSpace: 'nowrap',
+              } as React.CSSProperties;
+              const content = (
                 <span className="flex items-center gap-2" style={{ color: C.text }}>
                   <span className="w-1.5 h-1.5 rounded-full animate-pulse-glow" style={{ background: C.brand }} />
                   {t.title}
                 </span>
-              </div>
-            ))}
+              );
+              return t.href ? (
+                <Link key={t.title} to={t.href}
+                  className="absolute animate-fade-up animate-float text-sm font-medium pointer-events-auto"
+                  style={tagStyle}>
+                  {content}
+                </Link>
+              ) : (
+                <div key={t.title}
+                  className="absolute animate-fade-up animate-float text-sm font-medium"
+                  style={tagStyle}>
+                  {content}
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -462,7 +474,7 @@ const Index = () => {
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-px mt-16"
           style={{ border: `1px solid ${C.borderS}`, background: C.borderS }}>
           {SERVICES.map((s, i) => (
-            <div key={s.title} className="group glow-border glass-card p-8 lg:p-10 relative overflow-hidden transition-all duration-300">
+            <Link key={s.title} to={s.href} className="group glow-border glass-card p-8 lg:p-10 relative overflow-hidden transition-all duration-300 block">
               <div className="absolute top-0 right-0 font-display font-bold p-4"
                 style={{ fontSize: '5rem', color: 'rgba(255,255,255,0.025)', lineHeight: 1 }}>0{i + 1}</div>
               <div className="icon-box w-14 h-14 mb-6">
@@ -473,7 +485,7 @@ const Index = () => {
               <Icon name="ArrowRight" size={20}
                 className="group-hover:translate-x-1 transition-all"
                 style={{ color: C.textMut } as React.CSSProperties} />
-            </div>
+            </Link>
           ))}
         </div>
       </section>

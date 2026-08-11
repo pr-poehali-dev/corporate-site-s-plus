@@ -52,6 +52,7 @@ const DIRECTIONS = [
     ],
     img: 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fe84d075-429f-4c34-84d4-f90c0604c677.png',
     accent: C.brand,
+    link: '/services/software-development',
   },
   {
     id: 'ai',
@@ -322,7 +323,7 @@ const Services = () => {
                     </div>
                   </div>
 
-                  <button onClick={() => navigate('/contacts')}
+                  <button onClick={() => d.link ? navigate(d.link) : navigate('/contacts')}
                     className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold transition-all"
                     style={{ background: d.accent, color: '#fff' }}
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.85'; }}
