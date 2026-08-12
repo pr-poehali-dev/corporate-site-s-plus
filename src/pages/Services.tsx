@@ -131,6 +131,7 @@ const DIRECTIONS = [
     ],
     img: 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/229cd8e3-e493-413f-a957-6b508e64950c.png',
     accent: '#FF6B6B',
+    link: '/services/tech-marketing',
   },
 ];
 

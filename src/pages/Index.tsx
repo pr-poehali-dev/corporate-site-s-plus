@@ -25,7 +25,7 @@ const NAV = [
 const HERO_TAGS = [
   { title: 'AI и автоматизация',     left: '55%', top: '8%',  href: '/services/ai-automation' },
   { title: 'Разработка ПО',          left: '72%', top: '22%', href: '/services/software-development' },
-  { title: 'Маркетинг tech-компаний',left: '58%', top: '42%' },
+  { title: 'Маркетинг tech-компаний',left: '58%', top: '42%', href: '/services/tech-marketing' },
   { title: 'Консалтинг',             left: '80%', top: '58%', href: '/services/digital-consulting' },
   { title: 'Игровые проекты',        left: '60%', top: '74%', href: '/services/game-projects' },
   { title: 'Платформа С+',           left: '76%', top: '88%' },
@@ -36,7 +36,7 @@ const SERVICES = [
   { icon: 'BrainCircuit', title: 'AI и автоматизация',   desc: 'Внедряем искусственный интеллект, автоматизируем процессы и создаём умные сервисы.', href: '/services/ai-automation' },
   { icon: 'Gamepad2',     title: 'Игровые проекты',      desc: 'Создаём игры и игровые миры. Флагманский проект — «Лихие 90-е».', href: '/services/game-projects' },
   { icon: 'LineChart',    title: 'Консалтинг',           desc: 'Цифровая стратегия, IT-архитектура, проектирование и оптимизация процессов.', href: '/services/digital-consulting' },
-  { icon: 'Megaphone',    title: 'Маркетинг',            desc: 'Продвижение технологических продуктов и компаний на B2B и B2C рынках.', href: '/services#marketing' },
+  { icon: 'Megaphone',    title: 'Маркетинг',            desc: 'Продвижение технологических продуктов и компаний на B2B и B2C рынках.', href: '/services/tech-marketing' },
   { icon: 'Layers',       title: 'Платформа С+',         desc: 'Технологическая платформа для создания масштабируемых цифровых решений.', href: '/services' },
 ];
 
