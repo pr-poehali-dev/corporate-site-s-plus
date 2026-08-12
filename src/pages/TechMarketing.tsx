@@ -330,8 +330,69 @@ const TechMarketing = () => {
         </div>
       </section>
 
+      {/* ─── CMO ─── */}
+      <section style={{ background: C.bg1 }} className="relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: `radial-gradient(ellipse 60% 50% at 90% 20%, rgba(255,107,107,0.06) 0%, transparent 70%)` }} />
+        <div className="section-pad py-24">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-14 text-xs font-semibold uppercase tracking-widest"
+            style={{ border: `1px solid ${C.border}`, color: C.red, background: 'rgba(255,107,107,0.06)' }}>
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.red }} />
+            Маркетинговые проекты под управлением CMO
+          </div>
+
+          <div className="grid lg:grid-cols-12 gap-12 items-start">
+            <div className="lg:col-span-4">
+              <div className="relative overflow-hidden" style={{ border: `1px solid ${C.border}` }}>
+                <img src="https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/5d750e53-3212-4d7a-a29d-1a6e31501039.jpg"
+                  alt="Амир Ахмадьяров" className="w-full object-cover" style={{ aspectRatio: '3/4' }} />
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(7,10,15,0.85) 0%, transparent 40%)' }} />
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <div className="font-display font-semibold text-lg" style={{ color: '#fff' }}>Амир Ахмадьяров</div>
+                  <div className="text-sm" style={{ color: C.textSec }}>Директор по маркетингу</div>
+                </div>
+              </div>
+              <a href="https://ahmadiarov.ru/" target="_blank" rel="noopener noreferrer"
+                className="mt-5 inline-flex items-center gap-2 text-sm font-semibold transition-all"
+                style={{ color: C.red }}
+                onMouseEnter={e => { e.currentTarget.style.color = C.redH; }}
+                onMouseLeave={e => { e.currentTarget.style.color = C.red; }}>
+                Подробнее об Амире Ахмадьярове <Icon name="ArrowRight" size={16} />
+              </a>
+            </div>
+
+            <div className="lg:col-span-8">
+              <p className="text-base leading-relaxed mb-4" style={{ color: C.textSec }}>
+                Маркетинговое направление АО «СОФТ ПЛЮС СИСТЕМС» возглавляет <span style={{ color: C.text, fontWeight: 600 }}>Амир Дамирович Ахмадьяров</span> — директор по маркетингу с более чем 16-летним опытом работы в IT, технологических компаниях и цифровых продуктах. <span style={{ color: C.text, fontWeight: 600 }}>Ex-CMO ведущих компаний российского IT-рынка — Notamedia.Integrator и АО «ФИНТЕХ».</span>
+              </p>
+              <p className="text-base leading-relaxed mb-10" style={{ color: C.textSec }}>
+                Опыт включает разработку маркетинговых стратегий, управление крупными командами и бюджетами, вывод продуктов на рынок, построение систем B2B- и B2G-маркетинга и трансформацию маркетинговых функций компаний.
+              </p>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px" style={{ border: `1px solid ${C.borderS}`, background: C.borderS }}>
+                {[
+                  { value: '16+ лет', label: 'в маркетинге и технологическом бизнесе' },
+                  { value: '550+', label: 'специалистов в командах и проектах под управлением' },
+                  { value: '150+ млн ₽', label: 'маркетинговых бюджетов под управлением' },
+                  { value: '50+', label: 'профессиональных наград реализованных проектов' },
+                ].map((s) => (
+                  <div key={s.label} className="p-6" style={{ background: C.bg1 }}>
+                    <div className="font-display font-bold text-2xl mb-2" style={{ color: C.red }}>{s.value}</div>
+                    <div className="text-sm leading-relaxed" style={{ color: C.textSec }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-base leading-relaxed mt-10" style={{ color: C.textSec }}>
+                В отдельных проектах реализованные маркетинговые стратегии обеспечивали <span style={{ color: C.text, fontWeight: 600 }}>рост прибыли до 360%, увеличение конверсии до 92% и снижение стоимости привлечения клиентов до 58%</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ─── CTA ─── */}
-      <section className="section-pad py-24 relative overflow-hidden" style={{ background: C.bg1 }}>
+      <section className="section-pad py-24 relative overflow-hidden" style={{ background: C.bg0 }}>
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] opacity-10 rounded-full"
             style={{ background: `radial-gradient(ellipse, ${C.red} 0%, transparent 70%)`, filter: 'blur(60px)' }} />
