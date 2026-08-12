@@ -91,6 +91,7 @@ const DIRECTIONS = [
     ],
     img: 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/32fcf391-bc64-4ff6-9147-d5251c301499.png',
     accent: '#9B6DFF',
+    link: '/services/game-projects',
   },
   {
     id: 'consulting',
