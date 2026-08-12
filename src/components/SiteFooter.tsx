@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 
 const LOGO = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png';
@@ -10,7 +11,13 @@ const C = {
   borderS: 'rgba(255,255,255,0.05)',
 };
 
-const DIRECTIONS = ['Разработка ПО', 'AI и автоматизация', 'Игровые проекты', 'Консалтинг', 'Маркетинг'];
+const DIRECTIONS = [
+  { label: 'Разработка ПО',      href: '/services/software-development' },
+  { label: 'AI и автоматизация', href: '/services/ai-automation' },
+  { label: 'Игровые проекты',    href: '/services/game-projects' },
+  { label: 'Консалтинг',         href: '/services/digital-consulting' },
+  { label: 'Маркетинг',          href: '/services/tech-marketing' },
+];
 
 const FooterCol = ({ title, items, onClick }: { title: string; items: string[]; onClick?: (t: string) => void }) => (
   <div>
@@ -19,6 +26,18 @@ const FooterCol = ({ title, items, onClick }: { title: string; items: string[]; 
       {items.map((it) => (
         <button key={it} onClick={() => onClick?.(it)}
           className="text-left transition-colors hover:text-white">{it}</button>
+      ))}
+    </div>
+  </div>
+);
+
+const FooterLinkCol = ({ title, items }: { title: string; items: { label: string; href: string }[] }) => (
+  <div>
+    <div className="font-display font-semibold mb-4" style={{ color: C.text }}>{title}</div>
+    <div className="flex flex-col gap-2 text-sm" style={{ color: C.textMut }}>
+      {items.map((it) => (
+        <Link key={it.label} to={it.href}
+          className="text-left transition-colors hover:text-white">{it.label}</Link>
       ))}
     </div>
   </div>
@@ -33,8 +52,6 @@ const SOCIAL_ICONS: { icon: string; label: string }[] = [
 const SiteFooter = () => {
   const [showSocialModal, setShowSocialModal] = useState(false);
   const go = (path: string) => { window.location.href = path; };
-
-  const handleDirections = (t: string) => { go('/services'); };
 
   const handleCompany = (t: string) => {
     if (t === 'О компании') { go('/about'); return; }
@@ -64,7 +81,7 @@ const SiteFooter = () => {
           </a>
         </div>
 
-        <FooterCol title="Направления" items={DIRECTIONS} onClick={handleDirections} />
+        <FooterLinkCol title="Направления" items={DIRECTIONS} />
 
         <FooterCol title="Компания" items={['О компании', 'Продукты', 'Блог', 'Карьера', 'Контакты']}
           onClick={handleCompany} />
