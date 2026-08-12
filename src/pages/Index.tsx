@@ -28,7 +28,7 @@ const HERO_TAGS = [
   { title: 'Маркетинг tech-компаний',left: '58%', top: '42%', href: '/services/tech-marketing' },
   { title: 'Консалтинг',             left: '80%', top: '58%', href: '/services/digital-consulting' },
   { title: 'Игровые проекты',        left: '60%', top: '74%', href: '/services/game-projects' },
-  { title: 'Платформа С+',           left: '76%', top: '88%' },
+  { title: 'Платформа С+',           left: '76%', top: '88%', href: '/services' },
 ];
 
 const SERVICES = [

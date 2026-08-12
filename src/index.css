@@ -236,6 +236,15 @@
     flex-direction: column;
     gap: 0.4rem;
   }
+  .prose-blog ul {
+    list-style-type: disc;
+  }
+  .prose-blog ol {
+    list-style-type: decimal;
+  }
+  .prose-blog li {
+    display: list-item;
+  }
   .prose-blog li::marker {
     color: #2f80ff;
   }
@@ -336,6 +345,15 @@
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
+  }
+  .md-preview ul {
+    list-style-type: disc;
+  }
+  .md-preview ol {
+    list-style-type: decimal;
+  }
+  .md-preview li {
+    display: list-item;
   }
   .md-preview li::marker {
     color: #2f80ff;
