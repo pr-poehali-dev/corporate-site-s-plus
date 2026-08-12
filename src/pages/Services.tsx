@@ -110,6 +110,7 @@ const DIRECTIONS = [
     ],
     img: 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/f2ef3f3e-deb6-469e-894b-30c4fb3d21f0.png',
     accent: C.signal,
+    link: '/services/digital-consulting',
   },
   {
     id: 'marketing',

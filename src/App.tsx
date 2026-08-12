@@ -16,6 +16,7 @@ import Lihie90 from "./pages/Lihie90";
 import SoftwareDevelopment from "./pages/SoftwareDevelopment";
 import AiAutomation from "./pages/AiAutomation";
 import GameProjects from "./pages/GameProjects";
+import DigitalConsulting from "./pages/DigitalConsulting";
 import AdminLogin from "./pages/AdminLogin";
 import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/services/software-development" element={<SoftwareDevelopment />} />
           <Route path="/services/ai-automation" element={<AiAutomation />} />
           <Route path="/services/game-projects" element={<GameProjects />} />
+          <Route path="/services/digital-consulting" element={<DigitalConsulting />} />
           <Route path="/products" element={<Products />} />
           <Route path="/lihie90" element={<Lihie90 />} />
           <Route path="/about" element={<About />} />
