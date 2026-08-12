@@ -55,6 +55,13 @@ const SiteFooter = () => {
             </div>
           </div>
           <p className="text-sm" style={{ color: C.textMut }}>Российская IT-компания полного цикла.</p>
+          <a href="https://i.moscow/" target="_blank" rel="noopener noreferrer"
+            className="text-sm mt-2 inline-block transition-colors hover:underline"
+            style={{ color: C.textMut }}
+            onMouseEnter={e => (e.currentTarget.style.color = C.brand)}
+            onMouseLeave={e => (e.currentTarget.style.color = C.textMut)}>
+            Участник Московского инновационного кластера
+          </a>
         </div>
 
         <FooterCol title="Направления" items={DIRECTIONS} onClick={handleDirections} />
