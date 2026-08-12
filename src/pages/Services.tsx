@@ -72,6 +72,7 @@ const DIRECTIONS = [
     ],
     img: 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/5a6b7385-2823-4f51-b6c1-768f4326ce80.png',
     accent: C.tech,
+    link: '/services/ai-automation',
   },
   {
     id: 'games',
