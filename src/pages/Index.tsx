@@ -416,8 +416,8 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="section-pad relative z-10 w-full">
-          <div className="max-w-3xl">
+        <div className="section-pad relative z-10 w-full pointer-events-none">
+          <div className="max-w-3xl pointer-events-auto">
             {/* badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 animate-fade-up"
               style={{ border: `1px solid rgba(47,128,255,0.35)`, background: 'rgba(47,128,255,0.08)' }}>
