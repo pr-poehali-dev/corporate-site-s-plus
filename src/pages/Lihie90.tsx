@@ -245,7 +245,7 @@ const Lihie90 = () => {
 
             <div className="flex flex-col sm:flex-row gap-4">
               <a
-                href="https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/abeaae54-9016-4116-9fd5-35ada79295ee.pdf"
+                href="/documents/Презентация_Лихие_90-е.pdf"
                 download="Презентация_Лихие_90-е.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -562,7 +562,7 @@ const Lihie90 = () => {
               Подробная информация о проекте, концепции игры, текущем этапе разработки, технологической архитектуре и стратегии развития представлена в презентации.
             </p>
             <a
-              href="https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/abeaae54-9016-4116-9fd5-35ada79295ee.pdf"
+              href="/documents/Презентация_Лихие_90-е.pdf"
               download="Презентация_Лихие_90-е.pdf"
               target="_blank"
               rel="noopener noreferrer"
