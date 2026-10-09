@@ -1,4 +1,5 @@
-import {defineConfig} from "vite";
+import {defineConfig, build as viteBuild} from "vite";
+import fs from "fs";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import {componentTagger} from "pp-tagger";
@@ -100,11 +101,45 @@ const hmrKeepalive = {
     transformIndexHtml: () => [{tag: 'script', children: hmrClient, injectTo: 'head-prepend' as const}],
 };
 
+
+const blogPrerender = () => {
+    let outDir = '';
+    let isSsr = false;
+    return {
+        name: 'blog-prerender',
+        apply: 'build' as const,
+        configResolved(cfg: any) {
+            outDir = path.resolve(cfg.root, cfg.build.outDir);
+            isSsr = !!cfg.build.ssr;
+        },
+        async closeBundle() {
+            if (isSsr) return;
+            const tmp = fs.mkdtempSync(path.join(__dirname, 'node_modules', '.blog-ssr-'));
+            try {
+                await viteBuild({
+                    configFile: false,
+                    logLevel: 'error',
+                    plugins: [react()],
+                    resolve: {alias: {"@": path.resolve(__dirname, "./src")}},
+                    build: {ssr: path.resolve(__dirname, 'src/entry-server.tsx'), outDir: tmp, emptyOutDir: true},
+                });
+                const mod = await import(/* @vite-ignore */ path.resolve(__dirname, 'scripts/prerender.mjs') + '?t=' + Date.now());
+                await mod.prerender(outDir, path.join(tmp, 'entry-server.js'));
+            } catch (e: any) {
+                console.warn('[prerender] пропущен:', e?.message || e);
+            } finally {
+                fs.rmSync(tmp, {recursive: true, force: true});
+            }
+        },
+    };
+};
+
 // https://vitejs.dev/config/
 export default defineConfig(({mode}) => ({
     plugins: [
         react(),
         hmrKeepalive,
+        blogPrerender(),
         mode === 'development' &&
         componentTagger(),
     ].filter(Boolean),

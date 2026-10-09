@@ -3,8 +3,6 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const API = 'https://functions.poehali.dev/dd31f286-4b2a-49dc-a63f-7bbd58a99a3f/';
-const DIST = path.resolve('dist');
-const SSR = path.resolve('dist-ssr/entry-server.js');
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const safeJson = (o) => JSON.stringify(o).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
@@ -64,17 +62,19 @@ function buildHtml(template, meta, body, preload) {
   return html;
 }
 
+let DIST_DIR = '';
 function write(rel, html) {
-  const file = path.join(DIST, rel, 'index.html');
+  const file = path.join(DIST_DIR, rel, 'index.html');
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, html);
 }
 
-async function main() {
+export async function prerender(DIST, SSR) {
   if (!fs.existsSync(path.join(DIST, 'index.html')) || !fs.existsSync(SSR)) {
     console.warn('[prerender] нет dist или dist-ssr — пропуск');
     return;
   }
+  DIST_DIR = DIST;
   const { render, postSeo, listSeo, listPath, BLOG_PER_PAGE } = await import(pathToFileURL(SSR).href);
   const template = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8');
 
@@ -105,7 +105,7 @@ async function main() {
   console.log(`[prerender] страниц списка: ${pageCount}, статей: ${ok}, sitemap обновлён`);
 }
 
-main().catch((e) => {
-  console.error('[prerender] ОШИБКА:', e.message);
-  process.exit(process.env.PRERENDER_STRICT === '1' ? 1 : 0);
-});
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {
+  prerender(path.resolve(process.argv[2] || 'dist'), path.resolve(process.argv[3] || 'dist-ssr/entry-server.js'))
+    .catch((e) => { console.error('[prerender] ОШИБКА:', e.message); process.exit(1); });
+}
