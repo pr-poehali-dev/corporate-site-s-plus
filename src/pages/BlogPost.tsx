@@ -2,14 +2,11 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { api, Post } from '@/lib/api';
-import { mdToHtml } from '@/lib/mdToHtml';
-import useSEO, { SITE_URL } from '@/hooks/useSEO';
-
-const DEFAULT_OG_IMAGE = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/files/og-image-1782221586814.png';
-
-function stripHtml(html: string): string {
-  return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-}
+import { ApiError } from '@/lib/api';
+import { postContentHtml, postSeo, DEFAULT_OG_IMAGE, SITE_URL } from '@/lib/blogSeo';
+import { preloadedPost } from '@/lib/preload';
+import { trackPageview } from '@/lib/metrika';
+import useSEO from '@/hooks/useSEO';
 
 const LOGO = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png';
 
@@ -25,50 +22,53 @@ function formatDate(s?: string) {
   return new Date(s).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
+type Status = 'loading' | 'ok' | 'notfound' | 'error';
+
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
-  const [post, setPost]   = useState<Post | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState('');
+  const initial = preloadedPost(slug);
+  const [post, setPost]     = useState<Post | null>(initial);
+  const [status, setStatus] = useState<Status>(initial ? 'ok' : 'loading');
+  const [attempt, setAttempt] = useState(0);
 
-  const seoTitle = post ? `${post.title} — Блог АО «С+»` : 'Загрузка статьи — Блог АО «С+»';
-  const seoDesc = post?.excerpt || (post?.content ? stripHtml(mdToHtml(post.content)).slice(0, 160) : 'Экспертные статьи АО «СОФТ ПЛЮС СИСТЕМС» об IT, AI и цифровой трансформации.');
-  const seoImage = post?.cover_url || DEFAULT_OG_IMAGE;
+  const seo = post ? postSeo(post) : null;
 
   useSEO({
-    title: seoTitle,
-    description: seoDesc,
-    keywords: post?.keywords?.join(', ') || post?.tags?.join(', '),
-    image: seoImage,
-    type: 'article',
-    publishedTime: post?.published_at,
-    modifiedTime: post?.updated_at,
-    jsonLd: post ? {
-      '@context': 'https://schema.org',
-      '@type': 'Article',
-      headline: post.title,
-      description: seoDesc,
-      image: seoImage,
-      datePublished: post.published_at,
-      dateModified: post.updated_at || post.published_at,
-      author: { '@type': 'Organization', name: 'АО «СОФТ ПЛЮС СИСТЕМС»' },
-      publisher: {
-        '@type': 'Organization',
-        name: 'АО «СОФТ ПЛЮС СИСТЕМС»',
-        logo: { '@type': 'ImageObject', url: 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png' },
-      },
-      mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/blog/${post.slug}` },
-    } : undefined,
+    title: seo?.title ?? (status === 'notfound' ? 'Статья не найдена — Блог АО «С+»' : 'Блог АО «С+»'),
+    description: seo?.description ?? 'Экспертные статьи АО «СОФТ ПЛЮС СИСТЕМС» об IT, AI и цифровой трансформации.',
+    keywords: seo?.keywords,
+    image: seo?.image ?? DEFAULT_OG_IMAGE,
+    url: seo?.url ?? (SITE_URL + '/blog'),
+    type: seo ? 'article' : 'website',
+    publishedTime: seo?.publishedTime,
+    modifiedTime: seo?.modifiedTime,
+    jsonLd: seo?.jsonLd,
+    noindex: status === 'notfound' || status === 'error',
   });
 
   useEffect(() => {
     if (!slug) return;
-    setLoading(true);
+    if (post && post.slug === slug) { setStatus('ok'); return; }
+    let cancelled = false;
+    setStatus('loading');
+    setPost(null);
     api.getPost(slug)
-      .then(setPost)
-      .catch(() => setError('Статья не найдена'))
-      .finally(() => setLoading(false));
-  }, [slug]);
+      .then(r => { if (!cancelled) { setPost(r); setStatus('ok'); } })
+      .catch((e: unknown) => {
+        if (cancelled) return;
+        setStatus(e instanceof ApiError && e.status === 404 ? 'notfound' : 'error');
+      });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug, attempt]);
+
+  useEffect(() => {
+    if (status === 'ok' && post) trackPageview(postSeo(post).title);
+  }, [status, post?.slug]);
+
+  const loading  = status === 'loading';
+  const notFound = status === 'notfound';
+  const failed   = status === 'error';
 
   return (
     <div style={{ background: C.bg0, minHeight: '100vh', color: C.text }}>
@@ -97,10 +97,17 @@ export default function BlogPost() {
           </div>
         )}
 
-        {error && (
+        {(notFound || failed) && (
           <div className="text-center py-24">
             <Icon name="FileX" size={48} className="mx-auto mb-4 opacity-30" />
-            <p className="font-display text-2xl mb-4" style={{ color: C.text }}>{error}</p>
+            <p className="font-display text-2xl mb-4" style={{ color: C.text }}>
+              {notFound ? 'Статья не найдена' : 'Не удалось загрузить статью'}
+            </p>
+            {failed && (
+              <button onClick={() => setAttempt(n => n + 1)} className="block mx-auto mb-4 text-sm" style={{ color: C.brand }}>
+                Повторить попытку
+              </button>
+            )}
             <Link to="/blog" className="inline-flex items-center gap-2 text-sm" style={{ color: C.brand }}>
               <Icon name="ArrowLeft" size={16} /> Вернуться к блогу
             </Link>
@@ -145,7 +152,7 @@ export default function BlogPost() {
 
             {post.cover_url && (
               <div className="mb-10 overflow-hidden" style={{ border: `1px solid ${C.border}` }}>
-                <img src={post.cover_url} alt={post.title} className="w-full object-cover" style={{ maxHeight: 480 }} />
+                <img src={post.cover_url} alt={post.title} width={900} height={480} className="w-full object-cover" style={{ maxHeight: 480 }} />
               </div>
             )}
 
@@ -157,7 +164,7 @@ export default function BlogPost() {
 
             {/* content */}
             <div className="prose-blog" style={{ color: C.textSec }}
-              dangerouslySetInnerHTML={{ __html: mdToHtml(post.content || '') }} />
+              dangerouslySetInnerHTML={{ __html: postContentHtml(post) }} />
 
             {/* keywords */}
             {post.keywords && post.keywords.length > 0 && (

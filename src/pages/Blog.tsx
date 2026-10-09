@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SiteFooter from '@/components/SiteFooter';
 import { api, Post } from '@/lib/api';
 import useSEO from '@/hooks/useSEO';
+import { BLOG_PER_PAGE, listPath, listSeo } from '@/lib/blogSeo';
+import { preloadedList } from '@/lib/preload';
+import { trackPageview } from '@/lib/metrika';
 
 const LOGO = 'https://cdn.poehali.dev/projects/0ee0b91b-714d-4de7-b57c-dc6c4abbfed0/bucket/fa8d0eab-d2fc-4e10-9c72-e8781f108f03.png';
 
@@ -32,21 +34,30 @@ function formatDate(s?: string) {
 }
 
 export default function Blog() {
-  useSEO({
-    title: 'Экспертиза АО «С+» — статьи об IT, AI и цифровой трансформации',
-    description: 'Экспертные статьи специалистов АО «СОФТ ПЛЮС СИСТЕМС» о разработке программного обеспечения, искусственном интеллекте, цифровой трансформации и корпоративных технологиях.',
-    keywords: 'IT блог, AI статьи, цифровая трансформация, разработка ПО, искусственный интеллект, B2B, B2G, Enterprise',
-  });
-  const [posts, setPosts]       = useState<Post[]>([]);
-  const [total, setTotal]       = useState(0);
-  const [page, setPage]         = useState(1);
+  const params = useParams<{ page?: string }>();
+  const routePage = Math.max(1, parseInt(params.page || '1', 10) || 1);
+  const initial = preloadedList(routePage);
+
+  const [posts, setPosts]       = useState<Post[]>(initial?.posts ?? []);
+  const [total, setTotal]       = useState(initial?.total ?? 0);
+  const [page, setPage]         = useState(routePage);
   const [category, setCategory] = useState('');
   const [tag, setTag]           = useState('');
-  const [loading, setLoading]   = useState(true);
+  const [loading, setLoading]   = useState(!initial);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [allCats, setAllCats]   = useState<string[]>([]);
+  const [allCats, setAllCats]   = useState<string[]>(initial?.categories ?? []);
   const navigate = useNavigate();
+  const filtered = !!(category || tag);
+
+  const seo = listSeo(filtered ? 1 : page);
+  useSEO({
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords,
+    url: seo.url,
+    noindex: filtered,
+  });
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 40);
@@ -54,26 +65,39 @@ export default function Blog() {
     return () => window.removeEventListener('scroll', fn);
   }, []);
 
-  const PER = 12;
+  const PER = BLOG_PER_PAGE;
 
-  // Полный список категорий грузим один раз, независимо от текущего фильтра —
-  // чтобы кнопки фильтров не пропадали при выборе одной из категорий
   useEffect(() => {
+    if (!filtered) setPage(routePage);
+  }, [routePage, filtered]);
+
+  useEffect(() => {
+    if (initial?.categories.length) return;
     api.getPosts({ per: 1000 })
       .then(r => setAllCats(Array.from(new Set(r.posts.map(p => p.category).filter(Boolean))) as string[]))
       .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const skipFirstFetch = useRef(!!initial);
   useEffect(() => {
+    if (skipFirstFetch.current) { skipFirstFetch.current = false; return; }
+    let cancelled = false;
     setLoading(true);
-    const params: Record<string, string | number> = { page, per: PER };
-    if (category) params.category = category;
-    if (tag) params.tag = tag;
-    api.getPosts(params)
-      .then(r => { setPosts(r.posts); setTotal(r.total); })
+    const q: Record<string, string | number> = { page, per: PER };
+    if (category) q.category = category;
+    if (tag) q.tag = tag;
+    api.getPosts(q)
+      .then(r => { if (!cancelled) { setPosts(r.posts); setTotal(r.total); } })
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, [page, category, tag]);
+
+  useEffect(() => {
+    if (!filtered) trackPageview(seo.title);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routePage]);
 
   const cats = allCats;
 
@@ -253,34 +277,34 @@ export default function Blog() {
             if (page < pageCount - 2) pages.push('...');
             pages.push(pageCount);
           }
+          const navCls = 'px-4 py-2.5 text-sm transition-colors';
+          const navStyle = { border: `1px solid ${C.border}`, color: C.textSec };
+          const go = (target: number, node: React.ReactNode, cls: string, style: React.CSSProperties, disabled = false) =>
+            filtered ? (
+              <button disabled={disabled} onClick={() => setPage(target)} className={`${cls} disabled:opacity-30`} style={style}>{node}</button>
+            ) : disabled ? (
+              <span className={`${cls} opacity-30`} style={style}>{node}</span>
+            ) : (
+              <Link to={listPath(target)} className={cls} style={style}>{node}</Link>
+            );
           return (
-            <div className="flex items-center justify-center gap-2 mt-12">
-              <button disabled={page === 1} onClick={() => setPage(p => p - 1)}
-                className="px-4 py-2.5 text-sm transition-colors disabled:opacity-30"
-                style={{ border: `1px solid ${C.border}`, color: C.textSec }}>
-                ←
-              </button>
+            <nav aria-label="Страницы блога" className="flex items-center justify-center gap-2 mt-12">
+              {go(page - 1, '←', navCls, navStyle, page === 1)}
               {pages.map((p, i) =>
                 p === '...' ? (
                   <span key={`dots-${i}`} className="px-2 text-sm" style={{ color: C.textMut }}>…</span>
                 ) : (
-                  <button key={p} onClick={() => setPage(p)}
-                    className="w-10 h-10 text-sm transition-colors"
-                    style={{
+                  <span key={p}>
+                    {go(p, p, 'w-10 h-10 text-sm transition-colors inline-flex items-center justify-center', {
                       border: `1px solid ${page === p ? C.brand : C.border}`,
                       background: page === p ? 'rgba(47,128,255,0.15)' : 'transparent',
                       color: page === p ? C.brand : C.textSec,
-                    }}>
-                    {p}
-                  </button>
+                    })}
+                  </span>
                 )
               )}
-              <button disabled={page >= pageCount} onClick={() => setPage(p => p + 1)}
-                className="px-4 py-2.5 text-sm transition-colors disabled:opacity-30"
-                style={{ border: `1px solid ${C.border}`, color: C.textSec }}>
-                →
-              </button>
-            </div>
+              {go(page + 1, '→', navCls, navStyle, page >= pageCount)}
+            </nav>
           );
         })()}
       </main>

@@ -5,6 +5,14 @@ function authHeader() {
   return t ? { 'X-Authorization': `Bearer ${t}` } : {};
 }
 
+export class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
+
 // Все запросы идут на корневой URL, маршрут передаётся как ?_path=...
 async function req<T>(method: string, route: string, body?: unknown, qp: Record<string, string> = {}): Promise<T> {
   const params = new URLSearchParams({ _path: route, ...qp });
@@ -13,8 +21,9 @@ async function req<T>(method: string, route: string, body?: unknown, qp: Record<
     headers: { 'Content-Type': 'application/json', ...authHeader() },
     body: body ? JSON.stringify(body) : undefined,
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Ошибка запроса');
+  let data: { error?: string } = {};
+  try { data = await res.json(); } catch { /* не JSON */ }
+  if (!res.ok) throw new ApiError(data.error || 'Ошибка запроса', res.status);
   return data as T;
 }
 

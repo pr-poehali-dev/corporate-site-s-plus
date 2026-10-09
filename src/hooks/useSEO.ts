@@ -15,6 +15,7 @@ interface SEOProps {
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   publishedTime?: string;
   modifiedTime?: string;
+  noindex?: boolean;
 }
 
 const setMetaByName = (name: string, content: string) => {
@@ -64,7 +65,7 @@ const setJsonLd = (data?: Record<string, unknown> | Record<string, unknown>[]) =
   document.head.appendChild(script);
 };
 
-const useSEO = ({ title, description, keywords, image, url, type = 'website', jsonLd, publishedTime, modifiedTime }: SEOProps) => {
+const useSEO = ({ title, description, keywords, image, url, type = 'website', jsonLd, publishedTime, modifiedTime, noindex }: SEOProps) => {
   useEffect(() => {
     document.title = title;
     setMetaByName('description', description);
@@ -99,8 +100,10 @@ const useSEO = ({ title, description, keywords, image, url, type = 'website', js
     else removeMetaByProperty('article:modified_time');
 
     setJsonLd(jsonLd);
+    if (noindex) setMetaByName('robots', 'noindex, follow');
+    else document.querySelector('meta[name="robots"]')?.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [title, description, keywords, image, url, type, publishedTime, modifiedTime, JSON.stringify(jsonLd)]);
+  }, [title, description, keywords, image, url, type, publishedTime, modifiedTime, noindex, JSON.stringify(jsonLd)]);
 };
 
 export default useSEO;

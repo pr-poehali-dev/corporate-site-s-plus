@@ -18,6 +18,7 @@ import re
 import time
 import traceback
 import unicodedata
+from urllib.parse import quote
 
 import bcrypt
 import boto3
@@ -126,28 +127,40 @@ def handler(event: dict, context) -> dict:
 
             conn, cur = get_db()
             cur.execute(
-                f"""SELECT slug, published_at FROM {T('posts')}
+                f"""SELECT slug, published_at, updated_at FROM {T('posts')}
                     WHERE is_published=TRUE ORDER BY published_at DESC"""
             )
             posts = cur.fetchall()
             conn.close()
 
+            def fmt(d):
+                return d.strftime("%Y-%m-%d") if d else None
+
+            lastmods = [fmt(max(x for x in (pa, ua) if x)) for _, pa, ua in posts if pa or ua]
+            blog_lastmod = max(lastmods) if lastmods else None
+
+            per_page = 12
+            pages_count = max(1, -(-len(posts) // per_page))
+            blog_paths = [("/blog", "0.9", "daily")] + [
+                (f"/blog/page/{n}", "0.5", "daily") for n in range(2, pages_count + 1)
+            ]
+
+            def entry(loc, lastmod, freq, priority):
+                lm = f"    <lastmod>{lastmod}</lastmod>\n" if lastmod else ""
+                return (f"  <url>\n    <loc>{loc}</loc>\n{lm}"
+                        f"    <changefreq>{freq}</changefreq>\n"
+                        f"    <priority>{priority}</priority>\n  </url>")
+
             entries = []
             for p, priority, freq in static_pages:
-                entries.append(
-                    f"  <url>\n    <loc>{site_url}{p}</loc>\n"
-                    f"    <lastmod>{today}</lastmod>\n"
-                    f"    <changefreq>{freq}</changefreq>\n"
-                    f"    <priority>{priority}</priority>\n  </url>"
-                )
-            for slug, published_at in posts:
-                lastmod = published_at.strftime("%Y-%m-%d") if published_at else today
-                entries.append(
-                    f"  <url>\n    <loc>{site_url}/blog/{slug}</loc>\n"
-                    f"    <lastmod>{lastmod}</lastmod>\n"
-                    f"    <changefreq>monthly</changefreq>\n"
-                    f"    <priority>0.7</priority>\n  </url>"
-                )
+                if p == "/blog":
+                    continue
+                entries.append(entry(f"{site_url}{p}", None, freq, priority))
+            for p, priority, freq in blog_paths:
+                entries.append(entry(f"{site_url}{p}", blog_lastmod, freq, priority))
+            for slug, published_at, updated_at in posts:
+                lm = fmt(max(x for x in (published_at, updated_at) if x)) if (published_at or updated_at) else None
+                entries.append(entry(f"{site_url}/blog/{quote(slug)}", lm, "monthly", "0.7"))
 
             xml = (
                 '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -200,12 +213,12 @@ def handler(event: dict, context) -> dict:
             total = cur.fetchone()[0]
 
             cur.execute(
-                f"""SELECT id, slug, title, excerpt, cover_url, category, tags, published_at
+                f"""SELECT id, slug, title, excerpt, cover_url, category, tags, published_at, updated_at
                     FROM {T('posts')} WHERE {where}
                     ORDER BY published_at DESC LIMIT %s OFFSET %s""",
                 vals + [per, offset]
             )
-            cols = ["id", "slug", "title", "excerpt", "cover_url", "category", "tags", "published_at"]
+            cols = ["id", "slug", "title", "excerpt", "cover_url", "category", "tags", "published_at", "updated_at"]
             posts = [dict(zip(cols, r)) for r in cur.fetchall()]
             conn.close()
             return ok({"posts": posts, "total": total, "page": page, "per": per})
@@ -216,7 +229,7 @@ def handler(event: dict, context) -> dict:
             conn, cur = get_db()
             cur.execute(
                 f"""SELECT p.id, p.slug, p.title, p.excerpt, p.content, p.cover_url,
-                          p.category, p.tags, p.keywords, p.published_at,
+                          p.category, p.tags, p.keywords, p.published_at, p.updated_at,
                           a.display_name AS author
                    FROM {T('posts')} p LEFT JOIN {T('admins')} a ON a.id=p.author_id
                    WHERE p.slug=%s AND p.is_published=TRUE""",
@@ -226,7 +239,7 @@ def handler(event: dict, context) -> dict:
             conn.close()
             if not row:
                 return err("Статья не найдена", 404)
-            cols = ["id","slug","title","excerpt","content","cover_url","category","tags","keywords","published_at","author"]
+            cols = ["id","slug","title","excerpt","content","cover_url","category","tags","keywords","published_at","updated_at","author"]
             return ok(dict(zip(cols, row)))
 
         # ── ADMIN: список ВСЕХ статей ─────────────────────────────
